@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Define colors for output
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
 
 function check_user() {
     if [[ $USER != "gpadmin" ]]; then
@@ -46,6 +51,7 @@ run_check "Mirror Segment Status" "gpstate -m"
 # Check mirror segments status and synchronization
 run_check "Standby coordinator Status" "gpstate -f"
 
+
 #Check the cluster specification - 
 echo "--- Checking GP Cluster Specifications ---" | tee -a $LOG_FILE
 echo "--- Checking GP hostname from gp_segment_configuration  ---" | tee -a $LOG_FILE
@@ -72,10 +78,14 @@ psql -c 'SELECT * FROM gp_segment_configuration ORDER BY hostname, datadir;' | t
  #   run_check "Metadata Consistency Check for DB: $db" "gpcheckcat -O -d $db"
 #done
 
-echo "--- Verify metadata consistency across all databases   ---" | tee -a $LOG_FILE
+echo "--- Verifying metadata consistency across all databases using gpcheckcat (schema only)   ---" | tee -a $LOG_FILE
 gpcheckcat -A   -p $GP_PORT | tee -a $LOG_FILE
 
-
+if [ $? -eq 0 ]; then
+    echo "Metadata consistency check passed." | tee -a $LOG_FILE
+else
+    echo "WARNING: Metadata inconsistencies found. Check gpcheckcat report for details." | tee -a $LOG_FILE
+fi
 
 
 # 3. Check gp_vmem_protect_limit and statement_mem parameters
@@ -96,7 +106,7 @@ echo "--- Checking Greenplum resource group specification  ---" | tee -a $LOG_FI
 psql  -c  'Select * from gp_toolkit.gp_resgroup_config' |  tee -a $LOG_FILE
 
 
-echo "--- Checking Memory Parameters ---" | tee -a $LOG_FILE
+echo "--- Checking memory configuration parameters ---" | tee -a $LOG_FILE
 echo "Show gp_vmem_protect_limit " | tee -a $LOG_FILE
 gpconfig -s gp_vmem_protect_limit | tee -a $LOG_FILE
 
