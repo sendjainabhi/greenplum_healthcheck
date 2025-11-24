@@ -15,10 +15,11 @@ read -p 'Enter the port of Greenplum  (5432): ' GP_PORT
 
 read -p 'Enter the Greenplum Full path to segment host file: ' GPHOSTFILE_PATH 
 
+read -p 'Do you want to run tests to analyzes the catalog tables on the Greenplum master/coordinator and segment instances to identify discrepancies (y/n): ' GP_CHECK
 # --- Configuration ---
 LOG_FILE="/home/gpadmin/gp_health_check_$(date +%Y%m%d_%H%M%S).log"
 # List of databases to check (exclude template and utility dbs)
-DATABASES="postgres verizon"
+DATABASES=""
 # GP_PORT=5432
 # GPHOSTFILE_PATH=/home/gpadmin/hostfile
 
@@ -46,7 +47,6 @@ run_check "Mirror Segment Status" "gpstate -m"
 # Check mirror segments status and synchronization
 run_check "Standby coordinator Status" "gpstate -f"
 
-
 #Check the cluster specification - 
 echo "--- Checking GP Cluster Specifications ---" | tee -a $LOG_FILE
 echo "--- Checking GP hostname from gp_segment_configuration  ---" | tee -a $LOG_FILE
@@ -69,17 +69,18 @@ psql -c 'SELECT * FROM gp_segment_configuration ORDER BY hostname, datadir;' | t
 
 
 # 2. Verify metadata consistency across all databases
-#for db in $DATABASES; do
- #   run_check "Metadata Consistency Check for DB: $db" "gpcheckcat -O -d $db"
-#done
 
-echo "--- Verifying metadata consistency across all databases using gpcheckcat (schema only)   ---" | tee -a $LOG_FILE
+
+if [[ "$GP_CHECK" =~ ^[Yy]$ ]]; then
+    echo "Performing gpcheckcat tests on Greenplum Database for maintaining data integrity and system health of all DB's"
+    # Add commands to execute if the user answered 'y' or 'Y'
+
+echo "--- Verify metadata consistency across all databases   ---" | tee -a $LOG_FILE
 gpcheckcat -A   -p $GP_PORT | tee -a $LOG_FILE
 
-if [ $? -eq 0 ]; then
-    echo "Metadata consistency check passed." | tee -a $LOG_FILE
 else
-    echo "WARNING: Metadata inconsistencies found. Check gpcheckcat report for details." | tee -a $LOG_FILE
+    echo "User decline to perform gpcheckcat tests."
+    # Add commands to execute if the user answered anything else
 fi
 
 
@@ -101,7 +102,7 @@ echo "--- Checking Greenplum resource group specification  ---" | tee -a $LOG_FI
 psql  -c  'Select * from gp_toolkit.gp_resgroup_config' |  tee -a $LOG_FILE
 
 
-echo "--- Checking memory configuration parameters ---" | tee -a $LOG_FILE
+echo "--- Checking Memory Parameters ---" | tee -a $LOG_FILE
 echo "Show gp_vmem_protect_limit " | tee -a $LOG_FILE
 gpconfig -s gp_vmem_protect_limit | tee -a $LOG_FILE
 
@@ -121,7 +122,7 @@ echo "--------------------------------------------------" | tee -a $LOG_FILE
 # and -A suppresses alignment, making the output easier to parse.
 # The -c option executes the SQL command.
 
-DB_NAMES=$(psql -t -A -c  "SELECT datname FROM pg_database WHERE datistemplate = false AND datname != 'postgres';")
+DB_NAMES=$(psql -t -A -c  "SELECT oid FROM pg_database WHERE datistemplate = false AND datname != 'postgres';")
 
 echo "DB Names : $DB_NAMES " | tee -a $LOG_FILE
 
@@ -150,7 +151,6 @@ echo "Show gp_stats_missing  " | tee -a $LOG_FILE
 
 done
 
-
 # 5. Checking for disk free space
 echo "--- Checking for Disk Free Space ---" | tee -a $LOG_FILE
 # This command checks all mounted filesystems on all hosts where segments reside
@@ -161,4 +161,4 @@ echo "--------------------------------------------------" | tee -a $LOG_FILE
 
 
 echo "Greenplum Health Check finished on $(date)" | tee -a $LOG_FILE
-
+echo "Inspect the log file for any confidential information before sending it to the Tanzu account team"
