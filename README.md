@@ -5,6 +5,12 @@
 
 We recommend executing the GP Health check script in restrictive mode during off hours. This is because certain tests, such as `gpcheckcat` and functions like `gp_size_of_table_disk`, may take longer to execute in production.
 
+### Prerequisite  
+
+- Keep the Greenplum Port Number and the full path to the GP Hosts file ready. 
+
+### Instructions 
+
 - Log in to your Greenplum environment as the `gpadmin` user.
 
 - Clone the Git repository `https://github.com/sendjainabhi/greenplum_healthcheck.git`.
