@@ -1,25 +1,27 @@
 
 
 
-## Deployment Instructions
+## Greenplum Healthcheck: Deployment Guide
 
-We recommend executing the GP Health check script in restrictive mode during off hours. This is because certain tests, such as `gpcheckcat` and functions like `gp_size_of_table_disk`, may take longer to execute in production.
+It is recommended to run the Greenplum Healthcheck script in a restrictive mode and
+during off-peak hours. This approach is advised because certain operations, such as
+`gpcheckcat` and functions like `gp_size_of_table_disk`, can be time-consuming,
+especially in a production environment.
 
-### Prerequisite  
+### Prerequisites  
 
-- Keep the Greenplum Port Number and the full path to the GP Hosts file ready. 
+Ensure you have the following information ready:
+- The Greenplum Port Number.
+- The full file path to the GP Hosts file.
 
-### Instructions 
-
-- Log in to your Greenplum environment as the `gpadmin` user.
-
-- Clone the Git repository `https://github.com/sendjainabhi/greenplum_healthcheck.git`.
-
-- Copy the `/scripts/gp_healthcheck.sh` script into your Greenplum coordination host’s `/home/gpadmin/` directory.
-
-- Assign the script with the `chmod +x gp7_healthcheck.sh` permission.
-
-- Execute the `gp_healthcheck.sh` script and wait for the process to complete, generating the log file `gp_health_check_<timestamp>.log`.
-
-- Inspect the log file for any confidential information before sending it to the Tanzu account team. 
- 
+### Execution Instructions
+Perform the following steps on your Greenplum coordination host:
+- Log In: Log in to your Greenplum environment using the `gpadmin` user.
+- Clone the Git repository `https://github.com/sendjainabhi/greenplum_healthcheck.git`
+- Copy the `/scripts/gp_healthcheck_html.sh` script into your Greenplum coordination host’s `/home/gpadmin/` directory.
+- Set Permissions: Assign execute permission to the script: `chmod +x gp_healthcheck_html.sh`
+- Execute: Run the script: gp_healthcheck.sh. Wait for the process to finish. This will
+generate a log file named `gp_healthcheck_report_<timestamp>.html`
+- Review and Share: Inspect the generated report file for any confidential information
+before submitting it to the Tanzu account team.
+- Send the file to the Tanzu account team for review
