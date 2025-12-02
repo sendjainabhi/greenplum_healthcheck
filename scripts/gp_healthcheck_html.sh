@@ -344,7 +344,7 @@ for DB in $DB_NAMES; do
     psql -d "$DB" -c "SELECT * FROM gp_toolkit.gp_skew_idle_fractions ORDER BY siffraction DESC LIMIT 20;" >> $HTML 2>&1
     psql -d "$DB" -c "SELECT * FROM gp_toolkit.gp_stats_missing LIMIT 20;" >> $HTML 2>&1
     psql -d "$DB" -c "SELECT * FROM gp_toolkit.gp_bloat_diag LIMIT 20;" >> $HTML 2>&1
-    psql -d "$DB" -c "SELECT * FROM gp_toolkit.gp_size_of_table_disk LIMIT 50;" >> $HTML 2>&1
+    psql -d "$DB" -c "SELECT extname, extversion, extrelocatable, extconfig, extcondition FROM pg_extension;"  >> $HTML 2>&1
 
     echo "</pre></section>" >> $HTML
 done

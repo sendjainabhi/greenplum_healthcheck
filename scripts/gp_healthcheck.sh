@@ -93,9 +93,8 @@ psql -t -A -c "SELECT extname FROM pg_extension" | grep -i gp_toolkit
 if [ $? -eq 0 ]; then
     echo "The gp_toolkit  extension exists in database"
 else
-    echo "The  extension does not exist in database , create gp_toolkit extension"
+    echo "The  extension does not exist in database."
 
-    psql -c 'CREATE EXTENSION gp_toolkit;'
 fi
 
 echo "--- Checking Greenplum resource group specification  ---" | tee -a $LOG_FILE
@@ -144,8 +143,6 @@ echo "Show gp_stats_missing  " | tee -a $LOG_FILE
 
  psql -c 'SELECT * FROM gp_toolkit.gp_bloat_diag LIMIT 20;' | tee -a $LOG_FILE
 
- echo "Show gp_size_of_table_disk: View the size of tables on disk." | tee -a $LOG_FILE
- psql -c  'SELECT * FROM gp_toolkit.gp_size_of_table_disk;' | tee -a $LOG_FILE
 
  echo "----------------Processing database End: $DB_NAME --------------------------" | tee -a $LOG_FILE
 
@@ -161,4 +158,4 @@ echo "--------------------------------------------------" | tee -a $LOG_FILE
 
 
 echo "Greenplum Health Check finished on $(date)" | tee -a $LOG_FILE
-echo "Inspect the log file for any confidential information before sending it to the Tanzu account team"
+echo "Inspect the log file for any confidential information before sending it to the Tanzu account team" | tee -a $LOG_FILE
