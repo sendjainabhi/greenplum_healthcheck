@@ -17,7 +17,7 @@ th { background-color:#ddd; }
 </style>
 </head>
 <body>
-<h1>Sample Greenplum Health Check Report - 20251202_184919</h1>
+<h1>test Greenplum Health Check Report - 20251202_202619</h1>
 <section><h2>Greenplum Health Check Summary</h2><table>
 <tr><th>Greenplum Test</th><th>Status</th><th>Reason</th></tr>
 <tr><td>Cluster Components Status</td><td class='pass_td'>PASS</td><td>All cluster components healthy</td></tr>
@@ -37,59 +37,117 @@ th { background-color:#ddd; }
 <tr><td>1707901</td><td>gp_wcc</td><td>SKIPPED</td><td>Missing bloat_pct column in gp_bloat_diag</td><td>FAIL</td><td>Tables with skccoeff > 1.5 detected</td></tr>
 </table></section>
 <section><h2>Cluster Component Details</h2>
+<h3>Cluster Components Status</h3><pre>20251202:20:26:21:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-Starting gpstate with args: -s
+20251202:20:26:21:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 7.3.1 build commit:f94282e57a5ae1d9d1615c994039f80035071d09'
+20251202:20:26:21:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-coordinator Greenplum Version: 'PostgreSQL 12.12 (Greenplum Database 7.3.1 build commit:f94282e57a5ae1d9d1615c994039f80035071d09) on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.4.1 20231218 (Red Hat 11.4.1-3), 64-bit compiled on Aug 22 2024 06:17:52 Bhuvnesh C.'
+20251202:20:26:21:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-Obtaining Segment details from coordinator...
+20251202:20:26:21:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-Gathering data from segments...
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-----------------------------------------------------
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:--Coordinator Configuration & Status
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-----------------------------------------------------
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Coordinator host                  = cdw
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Coordinator postgres process ID   = 2893050
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Coordinator data directory        = /data/coordinator/gpseg-1
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Coordinator port                  = 5432
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Coordinator current role          = dispatch
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Greenplum initsystem version      = 7.3.1 build commit:f94282e57a5ae1d9d1615c994039f80035071d09
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Greenplum current version         = PostgreSQL 12.12 (Greenplum Database 7.3.1 build commit:f94282e57a5ae1d9d1615c994039f80035071d09) on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.4.1 20231218 (Red Hat 11.4.1-3), 64-bit compiled on Aug 22 2024 06:17:52 Bhuvnesh C.
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Postgres version                  = 12.12
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Coordinator standby               = No coordinator standby configured
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-----------------------------------------------------
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-Segment Instance Status Report
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-----------------------------------------------------
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Segment Info
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Hostname                          = rocky-gp-jb01
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Address                           = cdw
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Datadir                           = /data/primary/gpseg0
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Port                              = 6000
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Status
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      PID                               = 2893011
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Configuration reports status as   = Up
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Database status                   = Up
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-----------------------------------------------------
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Segment Info
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Hostname                          = rocky-gp-jb01
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Address                           = cdw
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Datadir                           = /data/primary/gpseg1
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Port                              = 6001
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Status
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      PID                               = 2893029
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Configuration reports status as   = Up
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Database status                   = Up
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-----------------------------------------------------
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Segment Info
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Hostname                          = rocky-gp-jb02.tnzpve.broadcom.net
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Address                           = sdw1
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Datadir                           = /data/primary/gpseg2
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Port                              = 6000
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Status
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      PID                               = 762214
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Configuration reports status as   = Up
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Database status                   = Up
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-----------------------------------------------------
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Segment Info
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Hostname                          = rocky-gp-jb02.tnzpve.broadcom.net
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Address                           = sdw1
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Datadir                           = /data/primary/gpseg3
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Port                              = 6001
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Status
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      PID                               = 762226
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Configuration reports status as   = Up
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Database status                   = Up
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-----------------------------------------------------
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Segment Info
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Hostname                          = rocky-gp-jb03.tnzpve.broadcom.net
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Address                           = sdw2
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Datadir                           = /data/primary/gpseg4
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Port                              = 6000
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Status
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      PID                               = 152678
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Configuration reports status as   = Up
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Database status                   = Up
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-----------------------------------------------------
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Segment Info
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Hostname                          = rocky-gp-jb03.tnzpve.broadcom.net
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Address                           = sdw2
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Datadir                           = /data/primary/gpseg5
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Port                              = 6001
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-   Status
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      PID                               = 152690
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Configuration reports status as   = Up
+20251202:20:26:22:257123 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-      Database status                   = Up</pre>
+<h3>Standby Coordinator Status</h3><pre>20251202:20:26:23:257391 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-Starting gpstate with args: -f
+20251202:20:26:23:257391 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 7.3.1 build commit:f94282e57a5ae1d9d1615c994039f80035071d09'
+20251202:20:26:23:257391 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-coordinator Greenplum Version: 'PostgreSQL 12.12 (Greenplum Database 7.3.1 build commit:f94282e57a5ae1d9d1615c994039f80035071d09) on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.4.1 20231218 (Red Hat 11.4.1-3), 64-bit compiled on Aug 22 2024 06:17:52 Bhuvnesh C.'
+20251202:20:26:23:257391 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-Obtaining Segment details from coordinator...
+20251202:20:26:23:257391 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-Standby coordinator instance not configured
+20251202:20:26:23:257391 gpstate:rocky-gp-jb01:gpadmin-[INFO]:--------------------------------------------------------------
+20251202:20:26:23:257391 gpstate:rocky-gp-jb01:gpadmin-[INFO]:--pg_stat_replication
+20251202:20:26:23:257391 gpstate:rocky-gp-jb01:gpadmin-[INFO]:--------------------------------------------------------------
+20251202:20:26:23:257391 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-No entries found.
+20251202:20:26:23:257391 gpstate:rocky-gp-jb01:gpadmin-[INFO]:--------------------------------------------------------------</pre>
+<h3>Mirror Segment Status</h3><pre>20251202:20:26:22:257368 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-Starting gpstate with args: -m
+20251202:20:26:22:257368 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 7.3.1 build commit:f94282e57a5ae1d9d1615c994039f80035071d09'
+20251202:20:26:22:257368 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-coordinator Greenplum Version: 'PostgreSQL 12.12 (Greenplum Database 7.3.1 build commit:f94282e57a5ae1d9d1615c994039f80035071d09) on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.4.1 20231218 (Red Hat 11.4.1-3), 64-bit compiled on Aug 22 2024 06:17:52 Bhuvnesh C.'
+20251202:20:26:22:257368 gpstate:rocky-gp-jb01:gpadmin-[INFO]:-Obtaining Segment details from coordinator...
+20251202:20:26:22:257368 gpstate:rocky-gp-jb01:gpadmin-[WARNING]:--------------------------------------------------------------
+20251202:20:26:22:257368 gpstate:rocky-gp-jb01:gpadmin-[WARNING]:-Mirror not used
+20251202:20:26:22:257368 gpstate:rocky-gp-jb01:gpadmin-[WARNING]:--------------------------------------------------------------</pre>
 <h3>Catalog Integrity Check</h3><pre>Truncated batch size to number of primaries: 7
 
 Connected as user 'gpadmin' to database 'demo', port '5432', gpdb version '7.3'
 -------------------------------------------------------------------
 Batch size: 7
 Performing test 'unique_index_violation'
-Total runtime for test 'unique_index_violation': 0:00:00.52
+Total runtime for test 'unique_index_violation': 0:00:00.53
 Performing test 'duplicate'
-Total runtime for test 'duplicate': 0:00:02.40
+Total runtime for test 'duplicate': 0:00:02.30
 Performing test 'missing_extraneous'
-Total runtime for test 'missing_extraneous': 0:00:00.37
-Performing test 'inconsistent'
-Total runtime for test 'inconsistent': 0:00:01.98
-Performing test 'foreign_key'
-Total runtime for test 'foreign_key': 0:00:00.74
-Performing test 'pgclass'
-Total runtime for test 'pgclass': 0:00:00.02
-Performing test 'namespace'
-Total runtime for test 'namespace': 0:00:00.00
-Performing test 'distribution_policy'
-Total runtime for test 'distribution_policy': 0:00:00.00
-Performing test 'dependency'
-Total runtime for test 'dependency': 0:00:00.12
-Performing test 'part_integrity'
-Total runtime for test 'part_integrity': 0:00:00.02
-Performing test 'orphaned_toast_tables'
-Total runtime for test 'orphaned_toast_tables': 0:00:00.04
-Performing test 'aoseg_table'
-Total runtime for test 'aoseg_table': 0:00:00.00
-Performing test 'ao_lastrownums'
-Total runtime for test 'ao_lastrownums': 0:00:00.00
-Performing test 'mix_distribution_policy'
-Total runtime for test 'mix_distribution_policy': 0:00:00.00
-
-SUMMARY REPORT: PASSED
-===================================================================
-Completed 14 test(s) on database 'demo' at 2025-12-02 18:49:30 with elapsed time 0:00:06
-Found no catalog issue
-
-
-Connected as user 'gpadmin' to database 'gp_wcc', port '5432', gpdb version '7.3'
--------------------------------------------------------------------
-Batch size: 7
-Performing test 'unique_index_violation'
-Total runtime for test 'unique_index_violation': 0:00:00.49
-Performing test 'duplicate'
-Total runtime for test 'duplicate': 0:00:02.35
-Performing test 'missing_extraneous'
-Total runtime for test 'missing_extraneous': 0:00:00.39
+Total runtime for test 'missing_extraneous': 0:00:00.36
 Performing test 'inconsistent'
 Total runtime for test 'inconsistent': 0:00:02.04
 Performing test 'foreign_key'
-Total runtime for test 'foreign_key': 0:00:00.81
+Total runtime for test 'foreign_key': 0:00:00.74
 Performing test 'pgclass'
 Total runtime for test 'pgclass': 0:00:00.02
 Performing test 'namespace'
@@ -111,23 +169,23 @@ Total runtime for test 'mix_distribution_policy': 0:00:00.00
 
 SUMMARY REPORT: PASSED
 ===================================================================
-Completed 14 test(s) on database 'gp_wcc' at 2025-12-02 18:49:36 with elapsed time 0:00:06
+Completed 14 test(s) on database 'demo' at 2025-12-02 20:26:29 with elapsed time 0:00:06
 Found no catalog issue
 
 
-Connected as user 'gpadmin' to database 'gp_wcc_db', port '5432', gpdb version '7.3'
+Connected as user 'gpadmin' to database 'gp_wcc', port '5432', gpdb version '7.3'
 -------------------------------------------------------------------
 Batch size: 7
 Performing test 'unique_index_violation'
-Total runtime for test 'unique_index_violation': 0:00:00.56
+Total runtime for test 'unique_index_violation': 0:00:00.51
 Performing test 'duplicate'
-Total runtime for test 'duplicate': 0:00:02.40
+Total runtime for test 'duplicate': 0:00:02.19
 Performing test 'missing_extraneous'
-Total runtime for test 'missing_extraneous': 0:00:00.40
+Total runtime for test 'missing_extraneous': 0:00:00.34
 Performing test 'inconsistent'
-Total runtime for test 'inconsistent': 0:00:02.13
+Total runtime for test 'inconsistent': 0:00:01.92
 Performing test 'foreign_key'
-Total runtime for test 'foreign_key': 0:00:00.81
+Total runtime for test 'foreign_key': 0:00:00.80
 Performing test 'pgclass'
 Total runtime for test 'pgclass': 0:00:00.02
 Performing test 'namespace'
@@ -149,7 +207,45 @@ Total runtime for test 'mix_distribution_policy': 0:00:00.00
 
 SUMMARY REPORT: PASSED
 ===================================================================
-Completed 14 test(s) on database 'gp_wcc_db' at 2025-12-02 18:49:43 with elapsed time 0:00:06
+Completed 14 test(s) on database 'gp_wcc' at 2025-12-02 20:26:35 with elapsed time 0:00:05
+Found no catalog issue
+
+
+Connected as user 'gpadmin' to database 'gp_wcc_db', port '5432', gpdb version '7.3'
+-------------------------------------------------------------------
+Batch size: 7
+Performing test 'unique_index_violation'
+Total runtime for test 'unique_index_violation': 0:00:00.50
+Performing test 'duplicate'
+Total runtime for test 'duplicate': 0:00:02.31
+Performing test 'missing_extraneous'
+Total runtime for test 'missing_extraneous': 0:00:00.34
+Performing test 'inconsistent'
+Total runtime for test 'inconsistent': 0:00:01.93
+Performing test 'foreign_key'
+Total runtime for test 'foreign_key': 0:00:00.74
+Performing test 'pgclass'
+Total runtime for test 'pgclass': 0:00:00.02
+Performing test 'namespace'
+Total runtime for test 'namespace': 0:00:00.00
+Performing test 'distribution_policy'
+Total runtime for test 'distribution_policy': 0:00:00.00
+Performing test 'dependency'
+Total runtime for test 'dependency': 0:00:00.09
+Performing test 'part_integrity'
+Total runtime for test 'part_integrity': 0:00:00.02
+Performing test 'orphaned_toast_tables'
+Total runtime for test 'orphaned_toast_tables': 0:00:00.04
+Performing test 'aoseg_table'
+Total runtime for test 'aoseg_table': 0:00:00.00
+Performing test 'ao_lastrownums'
+Total runtime for test 'ao_lastrownums': 0:00:00.00
+Performing test 'mix_distribution_policy'
+Total runtime for test 'mix_distribution_policy': 0:00:00.00
+
+SUMMARY REPORT: PASSED
+===================================================================
+Completed 14 test(s) on database 'gp_wcc_db' at 2025-12-02 20:26:42 with elapsed time 0:00:06
 Found no catalog issue
 
 
@@ -157,15 +253,15 @@ Connected as user 'gpadmin' to database 'gpperfmon', port '5432', gpdb version '
 -------------------------------------------------------------------
 Batch size: 7
 Performing test 'unique_index_violation'
-Total runtime for test 'unique_index_violation': 0:00:01.33
+Total runtime for test 'unique_index_violation': 0:00:01.22
 Performing test 'duplicate'
-Total runtime for test 'duplicate': 0:00:02.85
+Total runtime for test 'duplicate': 0:00:02.70
 Performing test 'missing_extraneous'
-Total runtime for test 'missing_extraneous': 0:00:00.70
+Total runtime for test 'missing_extraneous': 0:00:00.74
 Performing test 'inconsistent'
-Total runtime for test 'inconsistent': 0:00:03.00
+Total runtime for test 'inconsistent': 0:00:03.06
 Performing test 'foreign_key'
-Total runtime for test 'foreign_key': 0:00:04.95
+Total runtime for test 'foreign_key': 0:00:05.01
 Performing test 'pgclass'
 Total runtime for test 'pgclass': 0:00:00.18
 Performing test 'namespace'
@@ -173,21 +269,21 @@ Total runtime for test 'namespace': 0:00:00.15
 Performing test 'distribution_policy'
 Total runtime for test 'distribution_policy': 0:00:00.00
 Performing test 'dependency'
-Total runtime for test 'dependency': 0:00:00.14
+Total runtime for test 'dependency': 0:00:00.11
 Performing test 'part_integrity'
 Total runtime for test 'part_integrity': 0:00:00.06
 Performing test 'orphaned_toast_tables'
-Total runtime for test 'orphaned_toast_tables': 0:00:00.42
+Total runtime for test 'orphaned_toast_tables': 0:00:00.41
 Performing test 'aoseg_table'
-Total runtime for test 'aoseg_table': 0:00:00.57
+Total runtime for test 'aoseg_table': 0:00:00.51
 Performing test 'ao_lastrownums'
-Total runtime for test 'ao_lastrownums': 0:00:00.02
+Total runtime for test 'ao_lastrownums': 0:00:00.03
 Performing test 'mix_distribution_policy'
 Total runtime for test 'mix_distribution_policy': 0:00:00.00
 
 SUMMARY REPORT: PASSED
 ===================================================================
-Completed 14 test(s) on database 'gpperfmon' at 2025-12-02 18:49:57 with elapsed time 0:00:14
+Completed 14 test(s) on database 'gpperfmon' at 2025-12-02 20:26:56 with elapsed time 0:00:14
 Found no catalog issue
 
 
@@ -195,91 +291,15 @@ Connected as user 'gpadmin' to database 'postgres', port '5432', gpdb version '7
 -------------------------------------------------------------------
 Batch size: 7
 Performing test 'unique_index_violation'
-Total runtime for test 'unique_index_violation': 0:00:00.53
+Total runtime for test 'unique_index_violation': 0:00:00.51
 Performing test 'duplicate'
-Total runtime for test 'duplicate': 0:00:02.45
+Total runtime for test 'duplicate': 0:00:02.30
 Performing test 'missing_extraneous'
-Total runtime for test 'missing_extraneous': 0:00:00.37
+Total runtime for test 'missing_extraneous': 0:00:00.38
 Performing test 'inconsistent'
-Total runtime for test 'inconsistent': 0:00:02.06
+Total runtime for test 'inconsistent': 0:00:02.27
 Performing test 'foreign_key'
-Total runtime for test 'foreign_key': 0:00:00.75
-Performing test 'pgclass'
-Total runtime for test 'pgclass': 0:00:00.02
-Performing test 'namespace'
-Total runtime for test 'namespace': 0:00:00.00
-Performing test 'distribution_policy'
-Total runtime for test 'distribution_policy': 0:00:00.00
-Performing test 'dependency'
-Total runtime for test 'dependency': 0:00:00.13
-Performing test 'part_integrity'
-Total runtime for test 'part_integrity': 0:00:00.02
-Performing test 'orphaned_toast_tables'
-Total runtime for test 'orphaned_toast_tables': 0:00:00.04
-Performing test 'aoseg_table'
-Total runtime for test 'aoseg_table': 0:00:00.00
-Performing test 'ao_lastrownums'
-Total runtime for test 'ao_lastrownums': 0:00:00.00
-Performing test 'mix_distribution_policy'
-Total runtime for test 'mix_distribution_policy': 0:00:00.00
-
-SUMMARY REPORT: PASSED
-===================================================================
-Completed 14 test(s) on database 'postgres' at 2025-12-02 18:50:04 with elapsed time 0:00:06
-Found no catalog issue
-
-
-Connected as user 'gpadmin' to database 'rcaf', port '5432', gpdb version '7.3'
--------------------------------------------------------------------
-Batch size: 7
-Performing test 'unique_index_violation'
-Total runtime for test 'unique_index_violation': 0:00:00.53
-Performing test 'duplicate'
-Total runtime for test 'duplicate': 0:00:02.33
-Performing test 'missing_extraneous'
-Total runtime for test 'missing_extraneous': 0:00:00.36
-Performing test 'inconsistent'
-Total runtime for test 'inconsistent': 0:00:02.03
-Performing test 'foreign_key'
-Total runtime for test 'foreign_key': 0:00:00.80
-Performing test 'pgclass'
-Total runtime for test 'pgclass': 0:00:00.02
-Performing test 'namespace'
-Total runtime for test 'namespace': 0:00:00.00
-Performing test 'distribution_policy'
-Total runtime for test 'distribution_policy': 0:00:00.00
-Performing test 'dependency'
-Total runtime for test 'dependency': 0:00:00.13
-Performing test 'part_integrity'
-Total runtime for test 'part_integrity': 0:00:00.02
-Performing test 'orphaned_toast_tables'
-Total runtime for test 'orphaned_toast_tables': 0:00:00.04
-Performing test 'aoseg_table'
-Total runtime for test 'aoseg_table': 0:00:00.00
-Performing test 'ao_lastrownums'
-Total runtime for test 'ao_lastrownums': 0:00:00.00
-Performing test 'mix_distribution_policy'
-Total runtime for test 'mix_distribution_policy': 0:00:00.00
-
-SUMMARY REPORT: PASSED
-===================================================================
-Completed 14 test(s) on database 'rcaf' at 2025-12-02 18:50:10 with elapsed time 0:00:06
-Found no catalog issue
-
-
-Connected as user 'gpadmin' to database 'template1', port '5432', gpdb version '7.3'
--------------------------------------------------------------------
-Batch size: 7
-Performing test 'unique_index_violation'
-Total runtime for test 'unique_index_violation': 0:00:00.54
-Performing test 'duplicate'
-Total runtime for test 'duplicate': 0:00:02.60
-Performing test 'missing_extraneous'
-Total runtime for test 'missing_extraneous': 0:00:00.40
-Performing test 'inconsistent'
-Total runtime for test 'inconsistent': 0:00:02.26
-Performing test 'foreign_key'
-Total runtime for test 'foreign_key': 0:00:00.87
+Total runtime for test 'foreign_key': 0:00:00.89
 Performing test 'pgclass'
 Total runtime for test 'pgclass': 0:00:00.03
 Performing test 'namespace'
@@ -287,7 +307,7 @@ Total runtime for test 'namespace': 0:00:00.00
 Performing test 'distribution_policy'
 Total runtime for test 'distribution_policy': 0:00:00.00
 Performing test 'dependency'
-Total runtime for test 'dependency': 0:00:00.14
+Total runtime for test 'dependency': 0:00:00.11
 Performing test 'part_integrity'
 Total runtime for test 'part_integrity': 0:00:00.03
 Performing test 'orphaned_toast_tables'
@@ -301,23 +321,61 @@ Total runtime for test 'mix_distribution_policy': 0:00:00.00
 
 SUMMARY REPORT: PASSED
 ===================================================================
-Completed 14 test(s) on database 'template1' at 2025-12-02 18:50:17 with elapsed time 0:00:06
+Completed 14 test(s) on database 'postgres' at 2025-12-02 20:27:03 with elapsed time 0:00:06
 Found no catalog issue
 
 
-Connected as user 'gpadmin' to database 'verizon', port '5432', gpdb version '7.3'
+Connected as user 'gpadmin' to database 'rcaf', port '5432', gpdb version '7.3'
 -------------------------------------------------------------------
 Batch size: 7
 Performing test 'unique_index_violation'
-Total runtime for test 'unique_index_violation': 0:00:00.61
+Total runtime for test 'unique_index_violation': 0:00:00.62
 Performing test 'duplicate'
-Total runtime for test 'duplicate': 0:00:02.58
+Total runtime for test 'duplicate': 0:00:02.59
 Performing test 'missing_extraneous'
-Total runtime for test 'missing_extraneous': 0:00:00.41
+Total runtime for test 'missing_extraneous': 0:00:00.37
 Performing test 'inconsistent'
-Total runtime for test 'inconsistent': 0:00:02.11
+Total runtime for test 'inconsistent': 0:00:02.14
 Performing test 'foreign_key'
-Total runtime for test 'foreign_key': 0:00:00.75
+Total runtime for test 'foreign_key': 0:00:00.80
+Performing test 'pgclass'
+Total runtime for test 'pgclass': 0:00:00.02
+Performing test 'namespace'
+Total runtime for test 'namespace': 0:00:00.00
+Performing test 'distribution_policy'
+Total runtime for test 'distribution_policy': 0:00:00.00
+Performing test 'dependency'
+Total runtime for test 'dependency': 0:00:00.12
+Performing test 'part_integrity'
+Total runtime for test 'part_integrity': 0:00:00.02
+Performing test 'orphaned_toast_tables'
+Total runtime for test 'orphaned_toast_tables': 0:00:00.04
+Performing test 'aoseg_table'
+Total runtime for test 'aoseg_table': 0:00:00.00
+Performing test 'ao_lastrownums'
+Total runtime for test 'ao_lastrownums': 0:00:00.00
+Performing test 'mix_distribution_policy'
+Total runtime for test 'mix_distribution_policy': 0:00:00.00
+
+SUMMARY REPORT: PASSED
+===================================================================
+Completed 14 test(s) on database 'rcaf' at 2025-12-02 20:27:09 with elapsed time 0:00:06
+Found no catalog issue
+
+
+Connected as user 'gpadmin' to database 'template1', port '5432', gpdb version '7.3'
+-------------------------------------------------------------------
+Batch size: 7
+Performing test 'unique_index_violation'
+Total runtime for test 'unique_index_violation': 0:00:00.52
+Performing test 'duplicate'
+Total runtime for test 'duplicate': 0:00:02.39
+Performing test 'missing_extraneous'
+Total runtime for test 'missing_extraneous': 0:00:00.38
+Performing test 'inconsistent'
+Total runtime for test 'inconsistent': 0:00:01.99
+Performing test 'foreign_key'
+Total runtime for test 'foreign_key': 0:00:00.81
 Performing test 'pgclass'
 Total runtime for test 'pgclass': 0:00:00.02
 Performing test 'namespace'
@@ -329,6 +387,44 @@ Total runtime for test 'dependency': 0:00:00.09
 Performing test 'part_integrity'
 Total runtime for test 'part_integrity': 0:00:00.02
 Performing test 'orphaned_toast_tables'
+Total runtime for test 'orphaned_toast_tables': 0:00:00.04
+Performing test 'aoseg_table'
+Total runtime for test 'aoseg_table': 0:00:00.00
+Performing test 'ao_lastrownums'
+Total runtime for test 'ao_lastrownums': 0:00:00.00
+Performing test 'mix_distribution_policy'
+Total runtime for test 'mix_distribution_policy': 0:00:00.00
+
+SUMMARY REPORT: PASSED
+===================================================================
+Completed 14 test(s) on database 'template1' at 2025-12-02 20:27:16 with elapsed time 0:00:06
+Found no catalog issue
+
+
+Connected as user 'gpadmin' to database 'verizon', port '5432', gpdb version '7.3'
+-------------------------------------------------------------------
+Batch size: 7
+Performing test 'unique_index_violation'
+Total runtime for test 'unique_index_violation': 0:00:00.54
+Performing test 'duplicate'
+Total runtime for test 'duplicate': 0:00:02.44
+Performing test 'missing_extraneous'
+Total runtime for test 'missing_extraneous': 0:00:00.35
+Performing test 'inconsistent'
+Total runtime for test 'inconsistent': 0:00:01.99
+Performing test 'foreign_key'
+Total runtime for test 'foreign_key': 0:00:00.76
+Performing test 'pgclass'
+Total runtime for test 'pgclass': 0:00:00.02
+Performing test 'namespace'
+Total runtime for test 'namespace': 0:00:00.00
+Performing test 'distribution_policy'
+Total runtime for test 'distribution_policy': 0:00:00.00
+Performing test 'dependency'
+Total runtime for test 'dependency': 0:00:00.11
+Performing test 'part_integrity'
+Total runtime for test 'part_integrity': 0:00:00.03
+Performing test 'orphaned_toast_tables'
 Total runtime for test 'orphaned_toast_tables': 0:00:00.05
 Performing test 'aoseg_table'
 Total runtime for test 'aoseg_table': 0:00:00.00
@@ -339,7 +435,7 @@ Total runtime for test 'mix_distribution_policy': 0:00:00.00
 
 SUMMARY REPORT: PASSED
 ===================================================================
-Completed 14 test(s) on database 'verizon' at 2025-12-02 18:50:24 with elapsed time 0:00:06
+Completed 14 test(s) on database 'verizon' at 2025-12-02 20:27:22 with elapsed time 0:00:06
 Found no catalog issue</pre>
 <h3>Disk Free</h3><pre></pre>
 <h3>CPU Usage</h3><pre></pre>
@@ -348,11 +444,11 @@ Found no catalog issue</pre>
 <section><h2>Greenplum Nodes Nodes Summary</h2><pre>
 CPU Utilization per Node (FAIL IF > 80%):
 [ cdw] top -b -n1 | grep 'Cpu(s)'
-[ cdw] %Cpu(s):  0.5 us,  1.5 sy,  0.0 ni, 98.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
-[sdw2] top -b -n1 | grep 'Cpu(s)'
-[sdw2] %Cpu(s):  0.2 us,  0.6 sy,  0.0 ni, 99.1 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+[ cdw] %Cpu(s):  0.4 us,  1.6 sy,  0.0 ni, 97.8 id,  0.0 wa,  0.1 hi,  0.0 si,  0.0 st
 [sdw1] top -b -n1 | grep 'Cpu(s)'
-[sdw1] %Cpu(s):  0.2 us,  0.9 sy,  0.0 ni, 98.9 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+[sdw1] %Cpu(s):  0.2 us,  0.6 sy,  0.0 ni, 99.1 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+[sdw2] top -b -n1 | grep 'Cpu(s)'
+[sdw2] %Cpu(s):  0.6 us,  1.7 sy,  0.0 ni, 97.6 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
 
 -----------------------------
 
@@ -360,17 +456,10 @@ Disk Free Space per Node (FAIL IF FREE < 15%):
 [ cdw] df -h | grep -v tmpfs | grep -v overlay
 [ cdw] Filesystem           Size  Used Avail Use% Mounted on
 [ cdw] efivarfs             256K   57K  195K  23% /sys/firmware/efi/efivars
-[ cdw] /dev/mapper/rl-root   70G   31G   40G  45% /
+[ cdw] /dev/mapper/rl-root   70G   32G   39G  45% /
 [ cdw] /dev/sda2            960M  526M  435M  55% /boot
 [ cdw] /dev/sda1            599M  7.1M  592M   2% /boot/efi
 [ cdw] /dev/mapper/rl-home  497G   21G  477G   5% /home
-[sdw2] df -h | grep -v tmpfs | grep -v overlay
-[sdw2] Filesystem           Size  Used Avail Use% Mounted on
-[sdw2] efivarfs             256K   57K  195K  23% /sys/firmware/efi/efivars
-[sdw2] /dev/mapper/rl-root   70G   25G   46G  35% /
-[sdw2] /dev/sda2            960M  450M  511M  47% /boot
-[sdw2] /dev/sda1            599M  7.1M  592M   2% /boot/efi
-[sdw2] /dev/mapper/rl-home  497G  3.9G  493G   1% /home
 [sdw1] df -h | grep -v tmpfs | grep -v overlay
 [sdw1] Filesystem           Size  Used Avail Use% Mounted on
 [sdw1] efivarfs             256K   57K  195K  23% /sys/firmware/efi/efivars
@@ -378,6 +467,13 @@ Disk Free Space per Node (FAIL IF FREE < 15%):
 [sdw1] /dev/sda2            960M  450M  511M  47% /boot
 [sdw1] /dev/mapper/rl-home  497G  4.0G  493G   1% /home
 [sdw1] /dev/sda1            599M  7.1M  592M   2% /boot/efi
+[sdw2] df -h | grep -v tmpfs | grep -v overlay
+[sdw2] Filesystem           Size  Used Avail Use% Mounted on
+[sdw2] efivarfs             256K   57K  195K  23% /sys/firmware/efi/efivars
+[sdw2] /dev/mapper/rl-root   70G   25G   46G  35% /
+[sdw2] /dev/sda2            960M  450M  511M  47% /boot
+[sdw2] /dev/sda1            599M  7.1M  592M   2% /boot/efi
+[sdw2] /dev/mapper/rl-home  497G  3.9G  493G   1% /home
 
 -----------------------------
 
@@ -385,12 +481,12 @@ MTU per Node (FAIL IF < 9000):
 [ cdw] ip link show | grep -i mtu
 [ cdw] 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
 [ cdw] 2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
-[sdw1] ip link show | grep -i mtu
-[sdw1] 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
-[sdw1] 2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
 [sdw2] ip link show | grep -i mtu
 [sdw2] 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
 [sdw2] 2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+[sdw1] ip link show | grep -i mtu
+[sdw1] 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+[sdw1] 2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
 </pre></section>
 <section><h2>Database ID: 16384</h2><pre>
 ERROR:  relation "gp_toolkit.gp_skew_coefficients" does not exist
@@ -620,6 +716,6 @@ LINE 1: SELECT * FROM gp_toolkit.gp_bloat_diag LIMIT 20;
 (4 rows)
 
 </pre></section>
-<h2>Greenplum Health Check HTML Report Completed: Tue Dec  2 06:50:54 PM EST 2025 </h2>
+<h2>Greenplum Health Check HTML Report Completed: Tue Dec  2 08:27:51 PM EST 2025 </h2>
 <h3>Inspect the Greenplum HTML report for any confidential information before sending it to the Tanzu account team</h3>
 </body></html>
