@@ -193,10 +193,38 @@ else
 fi
 
 #########################################
+# Greenplum Resource Group / Memory Check
+#########################################
+echo "Running Greenplum Resource Group / Memory Checks..."
+RG_MEM_FAIL=0
+COMP_OUTPUT_MEM=""
+
+# Fetch memory related parameters from gpconfig
+MEM_PARAMS=("memory_spill_ratio" "query_mem" "statement_mem" "max_statement_mem")
+for PARAM in "${MEM_PARAMS[@]}"; do
+    OUTPUT=$(gpconfig -s $PARAM 2>&1)
+    RET=$?
+    COMPONENT_OUTPUT["$PARAM"]="$OUTPUT"
+    if [[ $RET -ne 0 ]]; then
+        RG_MEM_FAIL=1
+    fi
+done
+
+# Add summary
+if [[ $RG_MEM_FAIL -eq 1 ]]; then
+    SUMMARY["Resource Group / Memory"]="FAIL"
+    FAIL_REASON["Resource Group / Memory"]="One or more memory parameters not retrieved correctly"
+else
+    SUMMARY["Resource Group / Memory"]="PASS"
+    PASS_REASON["Resource Group / Memory"]="All resource group memory parameters retrieved"
+fi
+
+
+#########################################
 # Ordered Greenplum Test Summary Table
 #########################################
 echo "Building Summary Table..."
-SUMMARY_ORDER=("Cluster Components Status" "Standby Coordinator Status" "Mirror Segment Status" "Catalog Integrity Check" "Disk Free" "CPU Usage" "MTU")
+SUMMARY_ORDER=("Cluster Components Status" "Standby Coordinator Status" "Mirror Segment Status" "Catalog Integrity Check" "Disk Free" "CPU Usage" "MTU" "Resource Group / Memory")
 echo "<section><h2>Greenplum Health Check Summary</h2><table>
 <tr><th>Greenplum Test</th><th>Status</th><th>Reason</th></tr>" >> $HTML
 
@@ -313,6 +341,17 @@ for DB in $DB_NAMES; do
     psql -d "$DB" -c "SELECT extname, extversion, extrelocatable, extconfig, extcondition FROM pg_extension;" >> $HTML 2>&1
     echo "</pre></section>" >> $HTML
 done
+
+
+#########################################
+# Resource Memory details logs
+#########################################
+# Memory details log
+echo "Adding Resource Memory details Logs..."
+echo "<h3>Resource Group / Memory Parameters</h3><pre>${COMPONENT_OUTPUT["memory_spill_ratio"]}</pre>" >> $HTML
+echo "<pre>${COMPONENT_OUTPUT["query_mem"]}</pre>" >> $HTML
+echo "<pre>${COMPONENT_OUTPUT["statement_mem"]}</pre>" >> $HTML
+echo "<pre>${COMPONENT_OUTPUT["max_statement_mem"]}</pre>" >> $HTML
 
 #########################################
 # Finish HTML
