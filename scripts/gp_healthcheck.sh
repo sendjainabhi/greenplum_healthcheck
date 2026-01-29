@@ -1,5 +1,21 @@
 #!/bin/bash
+set -o errexit   # exit on command failure
+set -o nounset   # error on undefined variables
+set -o pipefail  # catch errors in piped commands
 
+# ---------- Utility Functions ----------
+log() {
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_FILE"
+}
+
+
+fatal() {
+log "FATAL: $*"
+exit 1
+}
+
+
+trap 'fatal "Error in ${FUNCNAME[0]:-MAIN} at line $LINENO: $BASH_COMMAND"' ERR
 
 function check_user() {
     if [[ $USER != "gpadmin" ]]; then

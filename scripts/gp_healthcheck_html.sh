@@ -7,6 +7,16 @@
 # DESCRIPTION: Greenplum Health Check HTML Report Generation Script with separate DB Bloat/Skew Summary.
 # --------------------------------------------------
 
+
+# ---------------- ERROR HANDLING & WATCHDOG ----------------
+
+
+#fatal() {
+ #   echo "[FATAL] $(date '+%Y-%m-%d %H:%M:%S') : $*" >&2
+#}
+
+#trap 'fatal "Error in ${FUNCNAME[0]:-MAIN} at line $LINENO: $BASH_COMMAND"' ERR
+
 TIMEOUT_SEC=60   # Timeout for Disk/CPU/MTU checks
 
 check_user() {
@@ -121,7 +131,7 @@ echo "Running Disk checks on host $HOST..."
             USEP=$(echo "$line" | awk '{print $5}' | tr -d '%')
             [[ -z "$USEP" ]] && continue
             FREE=$((100 - USEP))
-            [[ "$FREE" -lt 15 ]] && DISK_FAIL=1
+            [[ "$FREE" -lt 25 ]] && DISK_FAIL=1
         done <<< "${NODE_DISK["$HOST"]}"
     else
         NODE_DISK["$HOST"]="${COMPONENT_OUTPUT["Disk Free ($HOST)"]}"
@@ -156,9 +166,9 @@ done
 
 # Populate summary with reasons
 if [[ "$DISK_FAIL" -eq 1 ]]; then
-    SUMMARY["Disk Free"]="FAIL"; FAIL_REASON["Disk Free"]="Disk free < 15% on one or more nodes"
+    SUMMARY["Disk Free"]="FAIL"; FAIL_REASON["Disk Free"]="Disk free < 25% on one or more nodes"
 else
-    SUMMARY["Disk Free"]="PASS"; PASS_REASON["Disk Free"]="All disks >= 15% free"
+    SUMMARY["Disk Free"]="PASS"; PASS_REASON["Disk Free"]="All disks >= 25% free"
 fi
 
 if [[ "$CPU_FAIL" -eq 1 ]]; then
@@ -168,7 +178,7 @@ else
 fi
 
 if [[ "$MTU_FAIL" -eq 1 ]]; then
-    SUMMARY["MTU"]="FAIL"; FAIL_REASON["MTU"]="MTU < 9000 on one or more nodes"
+    SUMMARY["MTU"]="SUGGESTION"; FAIL_REASON["MTU"]="MTU < 9000 on one or more nodes.We recommend Jumbo Packets with MTU to be set ~9000 for best performance"
 else
     SUMMARY["MTU"]="PASS"; PASS_REASON["MTU"]="All MTUs >= 9000"
 fi
@@ -213,7 +223,7 @@ done
 # Add summary
 if [[ $RG_MEM_FAIL -eq 1 ]]; then
     SUMMARY["Resource Group / Memory"]="FAIL"
-    FAIL_REASON["Resource Group / Memory"]="One or more memory parameters not retrieved correctly"
+    FAIL_REASON["Resource Group / Memory"]="One or more memory parameters(memory_spill_ratio,query_mem,statement_mem,max_statement_mem) not retrieved correctly"
 else
     SUMMARY["Resource Group / Memory"]="PASS"
     PASS_REASON["Resource Group / Memory"]="All resource group memory parameters retrieved"
@@ -231,7 +241,7 @@ echo "<section><h2>Greenplum Health Check Summary</h2><table>
 for k in "${SUMMARY_ORDER[@]}"; do
     STATUS="${SUMMARY[$k]}"
     if [[ "$STATUS" == "PASS" ]]; then CLASS="pass_td"; REASON="${PASS_REASON[$k]}"
-    elif [[ "$STATUS" == "SKIPPED" ]]; then CLASS="skip_td"; REASON="${FAIL_REASON[$k]}"
+    elif [[ "$STATUS" == "SKIPPED" || "$STATUS" == "SUGGESTION" ]]; then CLASS="skip_td"; REASON="${FAIL_REASON[$k]}"
     else CLASS="fail_td"; REASON="${FAIL_REASON[$k]}"; fi
     echo "<tr><td>$k</td><td class='$CLASS'>$STATUS</td><td>$REASON</td></tr>" >> $HTML
 done
@@ -239,9 +249,9 @@ echo "</table></section>" >> $HTML
 
 
 #########################################
-# DB Checks (Bloat/Skew) Warnings per DB with Fail Reason
+# DB Checks (Bloat/Skew) Test per DB with Fail Reason
 #########################################
-echo "<section><h2>Data Bloat/Skew Warnings per DB </h2><table><tr><th>DB OID</th><th>Database</th><th>Bloat Status</th><th>Bloat Fail Reason</th><th>Skew Status</th><th>Skew Fail Reason</th></tr>" >> $HTML
+echo "<section><h2>Data Bloat/Skew Test per DB </h2><table><tr><th>DB OID</th><th>Database</th><th>Bloat Status</th><th>Bloat Fail Reason</th><th>Skew Status</th><th>Skew Fail Reason</th></tr>" >> $HTML
 
 DBS=$(psql -t -A -c "SELECT datname FROM pg_database WHERE datistemplate=false AND datname!='postgres';")
 
@@ -254,10 +264,10 @@ for DB in $DBS; do
     EXT=$(psql -d "$DB" -t -A -c "SELECT 1 FROM pg_extension WHERE extname='gp_toolkit';")
 
     if [[ "$EXT" != "1" ]]; then
-        BLOAT_STATUS="SKIPPED"
-        SKEW_STATUS="SKIPPED"
-        BLOAT_FAIL_REASON="gp_toolkit extension not found"
-        SKEW_FAIL_REASON="gp_toolkit extension not found"
+        BLOAT_STATUS="Failed"
+        SKEW_STATUS="Failed"
+        BLOAT_FAIL_REASON="Extension gp_toolkit not found"
+        SKEW_FAIL_REASON="Extension gp_toolkit not found"
         echo "<tr><td>$DBOID</td><td>$DB</td><td>$BLOAT_STATUS</td><td>$BLOAT_FAIL_REASON</td><td>$SKEW_STATUS</td><td>$SKEW_FAIL_REASON</td></tr>" >> $HTML
         continue
     fi
@@ -272,7 +282,7 @@ for DB in $DBS; do
             BLOAT_FAIL_REASON="Tables with bloat_pct > $BLOAT_THRESHOLD detected"
         fi
     else
-        BLOAT_STATUS="SKIPPED"
+        BLOAT_STATUS="Failed"
         BLOAT_FAIL_REASON="Missing bloat_pct column in gp_bloat_diag"
     fi
 
@@ -286,7 +296,7 @@ for DB in $DBS; do
             SKEW_FAIL_REASON="Tables with skccoeff > $SKEW_THRESHOLD detected"
         fi
     else
-        SKEW_STATUS="SKIPPED"
+        SKEW_STATUS="Failed"
         SKEW_FAIL_REASON="Missing skccoeff column in gp_skew_coefficients"
     fi
 
@@ -298,6 +308,101 @@ for DB in $DBS; do
     echo "<tr><td>$DBOID</td><td>$DB</td><td>$BLOAT_STATUS</td><td>$BLOAT_FAIL_REASON</td><td>$SKEW_STATUS</td><td>$SKEW_FAIL_REASON</td></tr>" >> $HTML
 done
 echo "</table></section>" >> $HTML
+
+##################kernel parameters check #########################
+declare -A EXPECTED_KERNEL=(
+  ["kernel.shmall"]="197951838"
+  ["kernel.shmmax"]="810810728448"
+  ["kernel.shmmni"]="4096"
+  ["vm.overcommit_memory"]="2"
+  ["vm.overcommit_ratio"]="95"
+  ["net.ipv4.ip_local_port_range"]="65535"
+  ["kernel.sem"]="8192"
+  ["kernel.sysrq"]="1"
+  ["kernel.core_uses_pid"]="1"
+  ["kernel.msgmnb"]="65536"
+  ["kernel.msgmax"]="65536"
+  ["kernel.msgmni"]="2048"
+  ["net.ipv4.tcp_syncookies"]="1"
+  ["net.ipv4.conf.default.accept_source_route"]="0"
+  ["net.ipv4.tcp_max_syn_backlog"]="4096"
+  ["net.ipv4.conf.all.arp_filter"]="1"
+  ["net.ipv4.ipfrag_high_thresh"]="41943040"
+  ["net.ipv4.ipfrag_low_thresh"]="31457280"
+  ["net.ipv4.ipfrag_time"]="60"
+  ["net.core.netdev_max_backlog"]="10000"
+  ["net.core.rmem_max"]="2097152"
+  ["net.core.wmem_max"]="2097152"
+  ["vm.swappiness"]="10"
+  ["vm.zone_reclaim_mode"]="0"
+  ["vm.dirty_expire_centisecs"]="500"
+  ["vm.dirty_writeback_centisecs"]="100"
+  ["vm.dirty_background_ratio"]="0"
+  ["vm.dirty_ratio"]="0"
+  ["vm.dirty_background_bytes"]="1610612736"
+  ["vm.dirty_bytes"]="4294967296"
+)
+
+echo "Running kernel param complaiance Test..."
+
+echo "<section><h2>Kernel Parameter Compliance</h2>" >> "$HTML"
+
+CLUSTER_KERNEL_FAIL=0
+
+# Start the main table
+echo "<table border='1' cellspacing='0' cellpadding='4'>
+        <tr style='background-color:#f2f2f2;'>
+          <th>Host</th>
+          <th>Status</th>
+          <th>Kernel Parameter</th>
+          <th>Expected Value</th>
+          <th>Actual Value</th>
+        </tr>" >> "$HTML"
+
+for HOST in $(cat "$GPHOSTFILE_PATH"); do
+
+    HOST_FAIL=0
+    FAIL_ROWS=""
+
+    for PARAM in "${!EXPECTED_KERNEL[@]}"; do
+        EXPECTED="${EXPECTED_KERNEL[$PARAM]}"
+
+        # Fetch the parameter value and strip hostname from gpssh output
+        ACTUAL=$(gpssh -h "$HOST" -e "sysctl -n $PARAM" 2>/dev/null | tail -1 | awk '{print $NF}')
+
+        if [[ "$ACTUAL" != "$EXPECTED" ]]; then
+            HOST_FAIL=$((HOST_FAIL+1))
+            CLUSTER_KERNEL_FAIL=$((CLUSTER_KERNEL_FAIL+1))
+
+            # Append a row for the failing parameter
+            FAIL_ROWS+="<tr>
+                          <td>$HOST</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>$PARAM</td>
+                          <td>$EXPECTED</td>
+                          <td>${ACTUAL:-N/A}</td>
+                        </tr>"
+        fi
+    done
+
+    # If host passed all parameters, add one row showing PASS
+    if [[ $HOST_FAIL -eq 0 ]]; then
+        echo "<tr>
+                <td>$HOST</td>
+                <td style='color:green;'><b>PASS</b></td>
+                <td colspan='3' style='text-align:center;'>All kernel parameters match baseline</td>
+              </tr>" >> "$HTML"
+    else
+        # Append all failing rows for this host
+        echo "$FAIL_ROWS" >> "$HTML"
+    fi
+
+done
+
+# Close table
+echo "</table>" >> "$HTML"
+
+
 
 #########################################
 # Detailed Cluster Component Logs
@@ -318,7 +423,7 @@ echo "CPU Utilization per Node (FAIL IF > 80%):" >> $HTML
 CPU_OUTPUT=$(gpssh -f "$GPHOSTFILE_PATH" -e "top -b -n1 | grep 'Cpu(s)'"); echo "$CPU_OUTPUT" >> $HTML
 echo -e "\n-----------------------------\n" >> $HTML
 
-echo "Disk Free Space per Node (FAIL IF FREE < 15%):" >> $HTML
+echo "Disk Free Space per Node (FAIL IF FREE < 25%):" >> $HTML
 DISK_OUTPUT=$(gpssh -f "$GPHOSTFILE_PATH" -e "df -h | grep -v tmpfs | grep -v overlay"); echo "$DISK_OUTPUT" >> $HTML
 echo -e "\n-----------------------------\n" >> $HTML
 
