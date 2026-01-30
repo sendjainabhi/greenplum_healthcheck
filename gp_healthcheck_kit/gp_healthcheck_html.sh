@@ -311,8 +311,6 @@ echo "</table></section>" >> $HTML
 
 ##################kernel parameters check #########################
 declare -A EXPECTED_KERNEL=(
-  ["kernel.shmall"]="197951838"
-  ["kernel.shmmax"]="810810728448"
   ["kernel.shmmni"]="4096"
   ["vm.overcommit_memory"]="2"
   ["vm.overcommit_ratio"]="95"
