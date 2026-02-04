@@ -14,7 +14,6 @@ log "FATAL: $*"
 exit 1
 }
 
-
 trap 'fatal "Error in ${FUNCNAME[0]:-MAIN} at line $LINENO: $BASH_COMMAND"' ERR
 
 function check_user() {

@@ -60,8 +60,8 @@ done
 echo "Starting Greenplum Health Check..."
 
 TS=$(date +%Y%m%d_%H%M%S)
-HTML="/home/gpadmin/gp_healthcheck_report_${TS}.html"
-
+#HTML="/home/gpadmin/gp_healthcheck_report_${TS}.html"
+HTML="/home/gpadmin/${Company}_gp_healthcheck_report_${TS}.html"
 # Start HTML
 cat > $HTML <<EOF
 <html>
@@ -341,7 +341,7 @@ declare -A EXPECTED_KERNEL=(
   ["vm.dirty_bytes"]="4294967296"
 )
 
-echo "Running kernel param complaiance Test..."
+echo "Running kernel param compliance Test..."
 
 echo "<section><h2>Kernel Parameter Compliance</h2>" >> "$HTML"
 
