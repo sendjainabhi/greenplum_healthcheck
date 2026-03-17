@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # --------------------------------------------------
-# SCRIPT: gp_healthcheck_html.sh
+# SCRIPT: gp_healthcheck_html.sh V 1.0
 # AUTHOR: Abhishek Jain (Tanzu Product Value Engineering)
-# DATE: December 2, 2025
+# DATE: March 17, 2026
 # DESCRIPTION: Greenplum Health Check HTML Report Generation Script with separate DB Bloat/Skew Summary.
 # --------------------------------------------------
 
@@ -210,7 +210,7 @@ RG_MEM_FAIL=0
 COMP_OUTPUT_MEM=""
 
 # Fetch memory related parameters from gpconfig
-MEM_PARAMS=("memory_spill_ratio" "query_mem" "statement_mem" "max_statement_mem")
+MEM_PARAMS=("gp_vmem_protect_limit" "statement_mem" "max_statement_mem" "shared_buffers" "gp_resgroup_memory_policy" "gp_resource_manager" "gp_instrument_shmem_size")
 for PARAM in "${MEM_PARAMS[@]}"; do
     OUTPUT=$(gpconfig -s $PARAM 2>&1)
     RET=$?
@@ -261,7 +261,7 @@ for DB in $DBS; do
     BLOAT_STATUS="PASS"
     SKEW_STATUS="PASS"
     DBOID=$(psql -t -A -c "SELECT oid FROM pg_database WHERE datname ='$DB';")
-    EXT=$(psql -d "$DB" -t -A -c "SELECT 1 FROM pg_extension WHERE extname='gp_toolkit';")
+    EXT=$(psql -d "$DB" -t -A -c "SELECT 1 FROM pg_namespace WHERE nspname = 'gp_toolkit';")
 
     if [[ "$EXT" != "1" ]]; then
         BLOAT_STATUS="Failed"
@@ -451,10 +451,13 @@ done
 #########################################
 # Memory details log
 echo "Adding Resource Memory details Logs..."
-echo "<h3>Resource Group / Memory Parameters</h3><pre>${COMPONENT_OUTPUT["memory_spill_ratio"]}</pre>" >> $HTML
-echo "<pre>${COMPONENT_OUTPUT["query_mem"]}</pre>" >> $HTML
+echo "<h3>Resource Group / Memory Parameters</h3><pre>${COMPONENT_OUTPUT["gp_vmem_protect_limit"]}</pre>" >> $HTML
 echo "<pre>${COMPONENT_OUTPUT["statement_mem"]}</pre>" >> $HTML
 echo "<pre>${COMPONENT_OUTPUT["max_statement_mem"]}</pre>" >> $HTML
+echo "<pre>${COMPONENT_OUTPUT["shared_buffers"]}</pre>" >> $HTML
+echo "<pre>${COMPONENT_OUTPUT["gp_resgroup_memory_policy"]}</pre>" >> $HTML
+echo "<pre>${COMPONENT_OUTPUT["gp_resource_manager"]}</pre>" >> $HTML
+echo "<pre>${COMPONENT_OUTPUT["gp_instrument_shmem_size"]}</pre>" >> $HTML
 
 #########################################
 # Finish HTML

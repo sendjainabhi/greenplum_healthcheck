@@ -1,0 +1,642 @@
+<html>
+<head>
+<title>Greenplum Health Report</title>
+<style>
+body { font-family: Arial; background:#f5f5f5; }
+h1 { background:#004d99; padding:10px; color:white; }
+section { background:white; margin:15px; padding:10px; border-radius:8px; }
+.pass { color:green; font-weight:bold; }
+.fail { color:red; font-weight:bold; }
+pre { background:#eee; padding:10px; border-radius:5px; overflow-x:auto;}
+table { border-collapse: collapse; width:80%; margin-bottom:20px;}
+th, td { border: 1px solid #999; padding: 5px; text-align: center; }
+th { background-color:#ddd; }
+.pass_td { background-color: #b3ffb3; }
+.fail_td { background-color: #ff9999; }
+.skip_td { background-color: #ffff99; }
+</style>
+</head>
+<body>
+<h1>Test Greenplum Health Check Report - 20260317_173534</h1>
+<section><h2>Greenplum Health Check Summary</h2><table>
+<tr><th>Greenplum Test</th><th>Status</th><th>Reason</th></tr>
+<tr><td>Cluster Components Status</td><td class='pass_td'>PASS</td><td>All cluster components healthy</td></tr>
+<tr><td>Standby Coordinator Status</td><td class='pass_td'>PASS</td><td>Standby coordinator available</td></tr>
+<tr><td>Mirror Segment Status</td><td class='pass_td'>PASS</td><td>Mirror segments healthy</td></tr>
+<tr><td>Catalog Integrity Check</td><td class='pass_td'>PASS</td><td>Catalog integrity verified</td></tr>
+<tr><td>Disk Free</td><td class='pass_td'>PASS</td><td>All disks >= 25% free</td></tr>
+<tr><td>CPU Usage</td><td class='pass_td'>PASS</td><td>All CPU usage <= 80%</td></tr>
+<tr><td>MTU</td><td class='skip_td'>SUGGESTION</td><td>MTU < 9000 on one or more nodes.We recommend Jumbo Packets with MTU to be set ~9000 for best performance</td></tr>
+<tr><td>Resource Group / Memory</td><td class='pass_td'>PASS</td><td>All resource group memory parameters retrieved</td></tr>
+</table></section>
+<section><h2>Data Bloat/Skew Test per DB </h2><table><tr><th>DB OID</th><th>Database</th><th>Bloat Status</th><th>Bloat Fail Reason</th><th>Skew Status</th><th>Skew Fail Reason</th></tr>
+<tr><td>16384</td><td>gpadmin</td><td>Failed</td><td>Missing bloat_pct column in gp_bloat_diag</td><td>PASS</td><td></td></tr>
+<tr><td>16386</td><td>gpperfmon</td><td>Failed</td><td>Missing bloat_pct column in gp_bloat_diag</td><td>FAIL</td><td>Tables with skccoeff > 1.5 detected</td></tr>
+</table></section>
+<section><h2>Kernel Parameter Compliance</h2>
+<table border='1' cellspacing='0' cellpadding='4'>
+        <tr style='background-color:#f2f2f2;'>
+          <th>Host</th>
+          <th>Status</th>
+          <th>Kernel Parameter</th>
+          <th>Expected Value</th>
+          <th>Actual Value</th>
+        </tr>
+<tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>kernel.shmmni</td>
+                          <td>4096</td>
+                          <td>4096</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>vm.swappiness</td>
+                          <td>10</td>
+                          <td>10</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>net.ipv4.conf.default.accept_source_route</td>
+                          <td>0</td>
+                          <td>0</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>net.ipv4.tcp_max_syn_backlog</td>
+                          <td>4096</td>
+                          <td>4096</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>net.ipv4.ip_local_port_range</td>
+                          <td>65535</td>
+                          <td>65535</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>net.ipv4.conf.all.arp_filter</td>
+                          <td>1</td>
+                          <td>1</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>net.core.wmem_max</td>
+                          <td>2097152</td>
+                          <td>2097152</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>net.core.rmem_max</td>
+                          <td>2097152</td>
+                          <td>2097152</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>vm.zone_reclaim_mode</td>
+                          <td>0</td>
+                          <td>0</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>kernel.sem</td>
+                          <td>8192</td>
+                          <td>8192</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>net.core.netdev_max_backlog</td>
+                          <td>10000</td>
+                          <td>10000</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>vm.dirty_bytes</td>
+                          <td>4294967296</td>
+                          <td>4294967296</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>vm.overcommit_ratio</td>
+                          <td>95</td>
+                          <td>95</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>net.ipv4.tcp_syncookies</td>
+                          <td>1</td>
+                          <td>1</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>kernel.msgmnb</td>
+                          <td>65536</td>
+                          <td>65536</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>kernel.core_uses_pid</td>
+                          <td>1</td>
+                          <td>1</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>kernel.msgmni</td>
+                          <td>2048</td>
+                          <td>2048</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>vm.dirty_ratio</td>
+                          <td>0</td>
+                          <td>0</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>vm.dirty_writeback_centisecs</td>
+                          <td>100</td>
+                          <td>100</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>vm.dirty_expire_centisecs</td>
+                          <td>500</td>
+                          <td>500</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>net.ipv4.ipfrag_time</td>
+                          <td>60</td>
+                          <td>60</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>vm.dirty_background_bytes</td>
+                          <td>1610612736</td>
+                          <td>1610612736</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>vm.overcommit_memory</td>
+                          <td>2</td>
+                          <td>2</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>kernel.msgmax</td>
+                          <td>65536</td>
+                          <td>65536</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>net.ipv4.ipfrag_low_thresh</td>
+                          <td>31457280</td>
+                          <td>31457280</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>net.ipv4.ipfrag_high_thresh</td>
+                          <td>41943040</td>
+                          <td>41943040</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>vm.dirty_background_ratio</td>
+                          <td>0</td>
+                          <td>0</td>
+                        </tr><tr>
+                          <td>mdw</td>
+                          <td style='color:red;'><b>FAIL</b></td>
+                          <td>kernel.sysrq</td>
+                          <td>1</td>
+                          <td>1</td>
+                        </tr>
+</table>
+<section><h2>Cluster Component Details</h2>
+<h3>Cluster Components Status</h3><pre>20260317:17:35:35:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Starting gpstate with args: -s
+20260317:17:35:35:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 6.31.0 build commit:c6c750a88aaa0907fcd9e3c08cbec057d70ef806'
+20260317:17:35:35:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Master Greenplum Version: 'PostgreSQL 9.4.26 (Greenplum Database 6.31.0 build commit:c6c750a88aaa0907fcd9e3c08cbec057d70ef806) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Oct 20 2025 22:26:22'
+20260317:17:35:35:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Obtaining Segment details from master...
+20260317:17:35:35:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Gathering data from segments...
+.
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-----------------------------------------------------
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--Master Configuration & Status
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-----------------------------------------------------
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Master host                    = mdw
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Master postgres process ID     = 8985
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Master data directory          = /data/master/gpseg-1
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Master port                    = 5432
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Master current role            = dispatch
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Greenplum initsystem version   = 6.31.0 build commit:c6c750a88aaa0907fcd9e3c08cbec057d70ef806
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Greenplum current version      = PostgreSQL 9.4.26 (Greenplum Database 6.31.0 build commit:c6c750a88aaa0907fcd9e3c08cbec057d70ef806) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Oct 20 2025 22:26:22
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Postgres version               = 9.4.26
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Master standby                 = No master standby configured
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-----------------------------------------------------
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Segment Instance Status Report
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-----------------------------------------------------
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Segment Info
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Hostname                              = pve-gp6-lvn.lvn.broadcom.net
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Address                               = mdw
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Datadir                               = /data/primary/gpseg0
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Port                                  = 6000
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Mirroring Info
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Current role                          = Primary
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Preferred role                        = Primary
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Mirror status                         = Synchronized
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Replication Info
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Current write location                = A/6E761E0
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Bytes remaining to send to mirror     = 0
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Status
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      PID                                   = 8962
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Database status                       = Up
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-----------------------------------------------------
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Segment Info
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Hostname                              = pve-gp6-lvn.lvn.broadcom.net
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Address                               = mdw
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Datadir                               = /data/mirror/gpseg0
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Port                                  = 7000
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Mirroring Info
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Current role                          = Mirror
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Preferred role                        = Mirror
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Mirror status                         = Streaming
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Replication Info
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      WAL Sent Location                     = A/6E761E0
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      WAL Flush Location                    = A/6E761E0
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      WAL Replay Location                   = A/6E76138
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Bytes received but remain to flush    = 0
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Bytes received but remain to replay   = 168
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Status
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      PID                                   = 9732
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Segment status                        = Up
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-----------------------------------------------------
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Segment Info
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Hostname                              = pve-gp6-lvn.lvn.broadcom.net
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Address                               = mdw
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Datadir                               = /data/primary/gpseg1
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Port                                  = 6001
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Mirroring Info
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Current role                          = Primary
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Preferred role                        = Primary
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Mirror status                         = Synchronized
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Replication Info
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Current write location                = A/25EF7188
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Bytes remaining to send to mirror     = 0
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Status
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      PID                                   = 8948
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Database status                       = Up
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-----------------------------------------------------
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Segment Info
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Hostname                              = pve-gp6-lvn.lvn.broadcom.net
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Address                               = mdw
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Datadir                               = /data/mirror/gpseg1
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Port                                  = 7001
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Mirroring Info
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Current role                          = Mirror
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Preferred role                        = Mirror
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Mirror status                         = Streaming
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Replication Info
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      WAL Sent Location                     = A/25EF7188
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      WAL Flush Location                    = A/25EF7188
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      WAL Replay Location                   = A/25EF6E98
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Bytes received but remain to flush    = 0
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Bytes received but remain to replay   = 752
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Status
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      PID                                   = 9731
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260317:17:35:37:2334935 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Segment status                        = Up</pre>
+<h3>Standby Coordinator Status</h3><pre>20260317:17:35:38:2335462 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Starting gpstate with args: -f
+20260317:17:35:38:2335462 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 6.31.0 build commit:c6c750a88aaa0907fcd9e3c08cbec057d70ef806'
+20260317:17:35:38:2335462 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Master Greenplum Version: 'PostgreSQL 9.4.26 (Greenplum Database 6.31.0 build commit:c6c750a88aaa0907fcd9e3c08cbec057d70ef806) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Oct 20 2025 22:26:22'
+20260317:17:35:38:2335462 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Obtaining Segment details from master...
+20260317:17:35:38:2335462 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Standby master instance not configured
+20260317:17:35:38:2335462 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--------------------------------------------------------------
+20260317:17:35:38:2335462 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--pg_stat_replication
+20260317:17:35:38:2335462 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--------------------------------------------------------------
+20260317:17:35:38:2335462 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-No entries found.
+20260317:17:35:38:2335462 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--------------------------------------------------------------</pre>
+<h3>Mirror Segment Status</h3><pre>20260317:17:35:38:2335406 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Starting gpstate with args: -m
+20260317:17:35:38:2335406 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 6.31.0 build commit:c6c750a88aaa0907fcd9e3c08cbec057d70ef806'
+20260317:17:35:38:2335406 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Master Greenplum Version: 'PostgreSQL 9.4.26 (Greenplum Database 6.31.0 build commit:c6c750a88aaa0907fcd9e3c08cbec057d70ef806) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Oct 20 2025 22:26:22'
+20260317:17:35:38:2335406 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Obtaining Segment details from master...
+20260317:17:35:38:2335406 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--------------------------------------------------------------
+20260317:17:35:38:2335406 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--Current GPDB mirror list and status
+20260317:17:35:38:2335406 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--Type = Group
+20260317:17:35:38:2335406 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--------------------------------------------------------------
+20260317:17:35:38:2335406 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Mirror   Datadir               Port   Status    Data Status    
+20260317:17:35:38:2335406 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   mdw      /data/mirror/gpseg0   7000   Passive   Synchronized
+20260317:17:35:38:2335406 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   mdw      /data/mirror/gpseg1   7001   Passive   Synchronized
+20260317:17:35:38:2335406 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--------------------------------------------------------------</pre>
+<h3>Catalog Integrity Check</h3><pre>Truncated batch size to number of primaries: 3
+
+Connected as user 'gpadmin' to database 'gpadmin', port '5432', gpdb version '6.31'
+-------------------------------------------------------------------
+Batch size: 3
+Performing test 'unique_index_violation'
+Total runtime for test 'unique_index_violation': 0:00:00.75
+Performing test 'duplicate'
+Total runtime for test 'duplicate': 0:00:01.30
+Performing test 'missing_extraneous'
+Total runtime for test 'missing_extraneous': 0:00:00.41
+Performing test 'inconsistent'
+Total runtime for test 'inconsistent': 0:00:01.82
+Performing test 'foreign_key'
+Total runtime for test 'foreign_key': 0:00:01.06
+Performing test 'pgclass'
+Total runtime for test 'pgclass': 0:00:00.02
+Performing test 'namespace'
+Total runtime for test 'namespace': 0:00:00.00
+Performing test 'distribution_policy'
+Total runtime for test 'distribution_policy': 0:00:00.00
+Performing test 'dependency'
+Total runtime for test 'dependency': 0:00:00.28
+Performing test 'part_integrity'
+Total runtime for test 'part_integrity': 0:00:00.04
+Performing test 'part_constraint'
+Total runtime for test 'part_constraint': 0:00:00.18
+Performing test 'orphaned_toast_tables'
+Total runtime for test 'orphaned_toast_tables': 0:00:00.07
+Performing test 'aoseg_table'
+Total runtime for test 'aoseg_table': 0:00:00.00
+
+SUMMARY REPORT
+===================================================================
+Completed 13 test(s) on database 'gpadmin' at 2026-03-17 17:35:45 with elapsed time 0:00:06
+Found no catalog issue
+
+
+Connected as user 'gpadmin' to database 'gpperfmon', port '5432', gpdb version '6.31'
+-------------------------------------------------------------------
+Batch size: 3
+Performing test 'unique_index_violation'
+Total runtime for test 'unique_index_violation': 0:00:01.18
+Performing test 'duplicate'
+Total runtime for test 'duplicate': 0:00:01.39
+Performing test 'missing_extraneous'
+Total runtime for test 'missing_extraneous': 0:00:00.60
+Performing test 'inconsistent'
+Total runtime for test 'inconsistent': 0:00:03.23
+Performing test 'foreign_key'
+Total runtime for test 'foreign_key': 0:00:01.68
+Performing test 'pgclass'
+Total runtime for test 'pgclass': 0:00:00.04
+Performing test 'namespace'
+Total runtime for test 'namespace': 0:00:00.01
+Performing test 'distribution_policy'
+Total runtime for test 'distribution_policy': 0:00:00.02
+Performing test 'dependency'
+Total runtime for test 'dependency': 0:00:00.33
+Performing test 'part_integrity'
+Total runtime for test 'part_integrity': 0:00:00.07
+Performing test 'part_constraint'
+Total runtime for test 'part_constraint': 0:00:00.14
+Performing test 'orphaned_toast_tables'
+Total runtime for test 'orphaned_toast_tables': 0:00:00.09
+Performing test 'aoseg_table'
+Total runtime for test 'aoseg_table': 0:00:00.62
+
+SUMMARY REPORT
+===================================================================
+Completed 13 test(s) on database 'gpperfmon' at 2026-03-17 17:35:54 with elapsed time 0:00:09
+Found no catalog issue
+
+
+Connected as user 'gpadmin' to database 'postgres', port '5432', gpdb version '6.31'
+-------------------------------------------------------------------
+Batch size: 3
+Performing test 'unique_index_violation'
+Total runtime for test 'unique_index_violation': 0:00:00.81
+Performing test 'duplicate'
+Total runtime for test 'duplicate': 0:00:01.03
+Performing test 'missing_extraneous'
+Total runtime for test 'missing_extraneous': 0:00:00.40
+Performing test 'inconsistent'
+Total runtime for test 'inconsistent': 0:00:01.50
+Performing test 'foreign_key'
+Total runtime for test 'foreign_key': 0:00:01.12
+Performing test 'pgclass'
+Total runtime for test 'pgclass': 0:00:00.02
+Performing test 'namespace'
+Total runtime for test 'namespace': 0:00:00.00
+Performing test 'distribution_policy'
+Total runtime for test 'distribution_policy': 0:00:00.00
+Performing test 'dependency'
+Total runtime for test 'dependency': 0:00:00.24
+Performing test 'part_integrity'
+Total runtime for test 'part_integrity': 0:00:00.05
+Performing test 'part_constraint'
+Total runtime for test 'part_constraint': 0:00:00.12
+Performing test 'orphaned_toast_tables'
+Total runtime for test 'orphaned_toast_tables': 0:00:00.08
+Performing test 'aoseg_table'
+Total runtime for test 'aoseg_table': 0:00:00.00
+
+SUMMARY REPORT
+===================================================================
+Completed 13 test(s) on database 'postgres' at 2026-03-17 17:36:00 with elapsed time 0:00:05
+Found no catalog issue
+
+
+Connected as user 'gpadmin' to database 'template1', port '5432', gpdb version '6.31'
+-------------------------------------------------------------------
+Batch size: 3
+Performing test 'unique_index_violation'
+Total runtime for test 'unique_index_violation': 0:00:00.67
+Performing test 'duplicate'
+Total runtime for test 'duplicate': 0:00:01.04
+Performing test 'missing_extraneous'
+Total runtime for test 'missing_extraneous': 0:00:00.36
+Performing test 'inconsistent'
+Total runtime for test 'inconsistent': 0:00:01.56
+Performing test 'foreign_key'
+Total runtime for test 'foreign_key': 0:00:01.05
+Performing test 'pgclass'
+Total runtime for test 'pgclass': 0:00:00.02
+Performing test 'namespace'
+Total runtime for test 'namespace': 0:00:00.01
+Performing test 'distribution_policy'
+Total runtime for test 'distribution_policy': 0:00:00.00
+Performing test 'dependency'
+Total runtime for test 'dependency': 0:00:00.18
+Performing test 'part_integrity'
+Total runtime for test 'part_integrity': 0:00:00.03
+Performing test 'part_constraint'
+Total runtime for test 'part_constraint': 0:00:00.12
+Performing test 'orphaned_toast_tables'
+Total runtime for test 'orphaned_toast_tables': 0:00:00.06
+Performing test 'aoseg_table'
+Total runtime for test 'aoseg_table': 0:00:00.00
+
+SUMMARY REPORT
+===================================================================
+Completed 13 test(s) on database 'template1' at 2026-03-17 17:36:05 with elapsed time 0:00:05
+Found no catalog issue</pre>
+<h3>Disk Free</h3><pre></pre>
+<h3>CPU Usage</h3><pre></pre>
+<h3>MTU</h3><pre></pre>
+<h3>Resource Group / Memory</h3><pre></pre>
+</section>
+<section><h2>Greenplum Nodes Nodes Summary</h2><pre>
+CPU Utilization per Node (FAIL IF > 80%):
+[mdw] top -b -n1 | grep 'Cpu(s)'
+[mdw] %Cpu(s):  0.0 us,  1.0 sy,  0.0 ni, 99.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+
+-----------------------------
+
+Disk Free Space per Node (FAIL IF FREE < 25%):
+[mdw] df -h | grep -v tmpfs | grep -v overlay
+[mdw] Filesystem           Size  Used Avail Use% Mounted on
+[mdw] efivarfs             256K   57K  195K  23% /sys/firmware/efi/efivars
+[mdw] /dev/mapper/rl-root  370G   26G  345G   7% /
+[mdw] /dev/sda2            960M  474M  487M  50% /boot
+[mdw] /dev/mapper/rl-home   97G  1.3G   96G   2% /home
+[mdw] /dev/sda1            599M  7.1M  592M   2% /boot/efi
+
+-----------------------------
+
+MTU per Node (FAIL IF < 9000):
+[mdw] ip link show | grep -i mtu
+[mdw] 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+[mdw] 2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+</pre></section>
+<section><h2>Database ID: 16384</h2><pre>
+ skcoid | skcnamespace | skcrelname | skccoeff 
+--------+--------------+------------+----------
+(0 rows)
+
+ sifoid | sifnamespace | sifrelname | siffraction 
+--------+--------------+------------+-------------
+(0 rows)
+
+ smischema | smitable | smisize | smicols | smirecs 
+-----------+----------+---------+---------+---------
+(0 rows)
+
+ bdirelid | bdinspname | bdirelname | bdirelpages | bdiexppages | bdidiag 
+----------+------------+------------+-------------+-------------+---------
+(0 rows)
+
+ extname | extversion | extrelocatable | extconfig | extcondition 
+---------+------------+----------------+-----------+--------------
+ plpgsql | 1.0        | f              |           | 
+(1 row)
+
+</pre></section>
+<section><h2>Database ID: 16386</h2><pre>
+ skcoid | skcnamespace |                skcrelname                |         skccoeff          
+--------+--------------+------------------------------------------+---------------------------
+  16868 | gpmetrics    | _gpcc_pg_log_meta                        | 141.421356237309504880000
+  16408 | gpmetrics    | gpcc_canary_queries                      | 141.421356237309504880000
+ 336457 | gpmetrics    | gpcc_pg_log_history_1_prt_t1769985346    | 141.421356237309504880000
+  16843 | gpmetrics    | gpcc_pg_log_history_1_prt_1              |  36.664796061524686667000
+ 521328 | gpmetrics    | gpcc_plannode_history_1_prt_r2027291951  |   8.402482278254578580000
+  24754 | gpmetrics    | gpcc_plannode_history_1_prt_r1659906076  |   6.344652904331258116000
+  16992 | gpmetrics    | gpcc_table_info_history_1_prt_1          |   3.217300883737011487000
+  70033 | gpmetrics    | gpcc_queries_history_1_prt_r223528022    |   2.881250042186271749000
+  16967 | gpmetrics    | gpcc_table_info                          |   2.597053286494832321000
+ 521295 | gpmetrics    | gpcc_queries_history_1_prt_r1334202933   |   2.003732862422729746000
+ 201112 | gpmetrics    | gpcc_table_info_history_1_prt_r10755835  |   1.608148629204548316000
+  64171 | gpmetrics    | gpcc_table_info_history_1_prt_r805802478 |   1.561512970620830738000
+  16675 | gpmetrics    | gpcc_ps_history_1_prt_1                  |   1.377136802310879401000
+ 336400 | gpmetrics    | gpcc_disk_history_1_prt_r1167762379      |   1.153115310030478825000
+ 201056 | gpmetrics    | gpcc_ps_history_1_prt_r1169634143        |   1.122391716169123016000
+ 336470 | gpmetrics    | gpcc_table_info_history_1_prt_r253238005 |   1.099832787624768395000
+  64115 | gpmetrics    | gpcc_ps_history_1_prt_r1218830078        |   0.823690694930566084000
+  70066 | gpmetrics    | gpcc_plannode_history_1_prt_r341244778   |   0.784756357625255549000
+  16744 | gpmetrics    | gpcc_disk_history_1_prt_1                |   0.762836203857229547000
+ 201042 | gpmetrics    | gpcc_disk_history_1_prt_r171901546       |   0.603285547440904018000
+(20 rows)
+
+ sifoid | sifnamespace |                sifrelname                |      siffraction       
+--------+--------------+------------------------------------------+------------------------
+  16868 | gpmetrics    | _gpcc_pg_log_meta                        | 0.50000000000000000000
+  16408 | gpmetrics    | gpcc_canary_queries                      | 0.50000000000000000000
+ 336457 | gpmetrics    | gpcc_pg_log_history_1_prt_t1769985346    | 0.50000000000000000000
+  16843 | gpmetrics    | gpcc_pg_log_history_1_prt_1              | 0.20588235294117647059
+ 521328 | gpmetrics    | gpcc_plannode_history_1_prt_r2027291951  | 0.05608241226166227001
+  24754 | gpmetrics    | gpcc_plannode_history_1_prt_r1659906076  | 0.04293716086119376860
+  16992 | gpmetrics    | gpcc_table_info_history_1_prt_1          | 0.02224371373307543520
+  70033 | gpmetrics    | gpcc_queries_history_1_prt_r223528022    | 0.01996672212978369384
+  16967 | gpmetrics    | gpcc_table_info                          | 0.01803278688524590164
+ 521295 | gpmetrics    | gpcc_queries_history_1_prt_r1334202933   | 0.01397058823529411765
+ 201112 | gpmetrics    | gpcc_table_info_history_1_prt_r10755835  | 0.01124347476910721456
+  64171 | gpmetrics    | gpcc_table_info_history_1_prt_r805802478 | 0.01092097941012799110
+  16675 | gpmetrics    | gpcc_ps_history_1_prt_1                  | 0.00964391691394658754
+ 336400 | gpmetrics    | gpcc_disk_history_1_prt_r1167762379      | 0.00808781051415366840
+ 201056 | gpmetrics    | gpcc_ps_history_1_prt_r1169634143        | 0.00787401574803149606
+ 336470 | gpmetrics    | gpcc_table_info_history_1_prt_r253238005 | 0.00771697735017037482
+  64115 | gpmetrics    | gpcc_ps_history_1_prt_r1218830078        | 0.00579064587973273942
+  70066 | gpmetrics    | gpcc_plannode_history_1_prt_r341244778   | 0.00551844321812372931
+  16744 | gpmetrics    | gpcc_disk_history_1_prt_1                | 0.00536512667660208644
+ 201042 | gpmetrics    | gpcc_disk_history_1_prt_r171901546       | 0.00424775264249728341
+(20 rows)
+
+ smischema |           smitable            | smisize | smicols | smirecs 
+-----------+-------------------------------+---------+---------+---------
+ gpmetrics | gpcc_alert_history            | f       |       5 |       0
+ gpmetrics | gpcc_alert_history_1_prt_1    | f       |       5 |       0
+ gpmetrics | gpcc_system_history           | f       |      31 |       0
+ gpmetrics | gpcc_alert_history_1_prt_2    | f       |       5 |       0
+ gpmetrics | gpcc_system_history_1_prt_1   | f       |      31 |       0
+ gpmetrics | gpcc_queries_history          | f       |      39 |       0
+ gpmetrics | gpcc_queries_history_1_prt_1  | f       |      39 |       0
+ gpmetrics | gpcc_queries_history_1_prt_2  | f       |      39 |       0
+ gpmetrics | gpcc_system_history_1_prt_2   | f       |      31 |       0
+ gpmetrics | gpcc_plannode_history         | f       |      28 |       0
+ gpmetrics | gpcc_plannode_history_1_prt_1 | f       |      28 |       0
+ gpmetrics | gpcc_plannode_history_1_prt_2 | f       |      28 |       0
+ gpmetrics | gpcc_ps_history               | f       |      13 |       0
+ gpmetrics | gpcc_ps_history_1_prt_1       | f       |      13 |       0
+ gpmetrics | gpcc_ps_history_1_prt_2       | f       |      13 |       0
+ gpmetrics | gpcc_database_history         | f       |       6 |       0
+ gpmetrics | gpcc_database_history_1_prt_1 | f       |       6 |       0
+ gpmetrics | gpcc_database_history_1_prt_2 | f       |       6 |       0
+ gpmetrics | gpcc_disk_history             | f       |       7 |       0
+ gpmetrics | gpcc_disk_history_1_prt_1     | f       |       7 |       0
+(20 rows)
+
+ bdirelid | bdinspname | bdirelname | bdirelpages | bdiexppages | bdidiag 
+----------+------------+------------+-------------+-------------+---------
+(0 rows)
+
+      extname      | extversion | extrelocatable | extconfig | extcondition 
+-------------------+------------+----------------+-----------+--------------
+ plpgsql           | 1.0        | f              |           | 
+ plpythonu         | 1.0        | f              |           | 
+ metrics_collector | 1.0        | f              |           | 
+(3 rows)
+
+</pre></section>
+<h3>Resource Group / Memory Parameters</h3><pre>Values on all segments are consistent
+GUC          : gp_vmem_protect_limit
+Master  value: 8192
+Segment value: 8192</pre>
+<pre>Values on all segments are consistent
+GUC          : statement_mem
+Master  value: 125MB
+Segment value: 125MB</pre>
+<pre>Values on all segments are consistent
+GUC          : max_statement_mem
+Master  value: 2000MB
+Segment value: 2000MB</pre>
+<pre>Values on all segments are consistent
+GUC          : shared_buffers
+Master  value: 125MB
+Segment value: 125MB</pre>
+<pre>Values on all segments are consistent
+GUC          : gp_resgroup_memory_policy
+Master  value: eager_free
+Segment value: eager_free</pre>
+<pre>Values on all segments are consistent
+GUC          : gp_resource_manager
+Master  value: queue
+Segment value: queue</pre>
+<pre>Values on all segments are consistent
+GUC          : gp_instrument_shmem_size
+Master  value: 5MB
+Segment value: 5MB</pre>
+<h2>Greenplum Health Check HTML Report Completed: Tue Mar 17 05:37:29 PM EDT 2026 </h2>
+<h3>Inspect the Greenplum HTML report for any confidential information before sending it to the Tanzu account team</h3>
+</body></html>
