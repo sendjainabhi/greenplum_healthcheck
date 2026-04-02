@@ -1,0 +1,439 @@
+<html>
+<head>
+<title>Greenplum Health Report</title>
+<style>
+body { font-family: Arial; background:#f5f5f5; }
+h1 { background:#004d99; padding:10px; color:white; }
+section { background:white; margin:15px; padding:10px; border-radius:8px; }
+.pass { color:green; font-weight:bold; }
+.fail { color:red; font-weight:bold; }
+pre { background:#eee; padding:10px; border-radius:5px; overflow-x:auto;}
+table { border-collapse: collapse; width:80%; margin-bottom:20px;}
+th, td { border: 1px solid #999; padding: 5px; text-align: center; }
+th { background-color:#ddd; }
+.pass_td { background-color: #b3ffb3; }
+.fail_td { background-color: #ff9999; }
+.skip_td { background-color: #ffff99; }
+</style>
+</head>
+<body>
+<h1>Test Greenplum Health Check Report - 20260402_183801</h1>
+<section><h2>Greenplum Health Check Summary</h2><table>
+<tr><th>Greenplum Test</th><th>Status</th><th>Reason</th></tr>
+<tr><td>GP Segments Status</td><td class='pass_td'>PASS</td><td>Primary segments healthy</td></tr>
+<tr><td>Standby Coordinator Status</td><td class='pass_td'>PASS</td><td>Standby coordinator available</td></tr>
+<tr><td>Mirror Segment Status</td><td class='pass_td'>PASS</td><td>Mirror segments healthy</td></tr>
+<tr><td>Catalog Integrity Check</td><td class='pass_td'>PASS</td><td>Catalog integrity verified</td></tr>
+<tr><td>Disk Free</td><td class='pass_td'>PASS</td><td>All disks >= 25% free</td></tr>
+<tr><td>CPU Usage</td><td class='pass_td'>PASS</td><td>Avg CPU=0% and Max CPU=7% within limits</td></tr>
+<tr><td>MTU</td><td class='skip_td'>SUGGESTION</td><td>MTU < 9000 on one or more nodes.We recommend Jumbo Packets with MTU to be set ~9000 for best performance</td></tr>
+<tr><td>Resource Group and Memory Param</td><td class='pass_td'>PASS</td><td>All resource group memory parameter values on all segments are consistent</td></tr>
+</table></section>
+<section><h2>Data Bloat/Skew Test per DB </h2><table><tr><th>DB OID</th><th>Database</th><th>Bloat Status</th><th>Bloat Fail Reason</th><th>Skew Status</th><th>Skew Fail Reason</th></tr>
+<tr><td>16384</td><td>rcaf</td><td>Failed</td><td>Missing bloat_pct column in gp_bloat_diag</td><td>FAIL</td><td>Tables with skccoeff > 1.5 detected</td></tr>
+<tr><td>16396</td><td>gpperfmon</td><td>Failed</td><td>Extension gp_toolkit not found</td><td>Failed</td><td>Extension gp_toolkit not found</td></tr>
+<tr><td>1107832</td><td>gp_wcc</td><td>Failed</td><td>Extension gp_toolkit not found</td><td>Failed</td><td>Extension gp_toolkit not found</td></tr>
+</table></section>
+<section><h2>Kernel Parameter Compliance</h2>
+<table border='1' cellspacing='0' cellpadding='4'>
+        <tr style='background-color:#f2f2f2;'>
+          <th>Host</th>
+          <th>Status</th>
+          <th>Kernel Parameter</th>
+          <th>Expected Value</th>
+          <th>Actual Value</th>
+        </tr>
+<tr>
+                <td>cdw</td>
+                <td style='color:green;'><b>PASS</b></td>
+                <td colspan='3' style='text-align:center;'>All kernel parameters match baseline</td>
+              </tr>
+<tr>
+                <td>sdw1</td>
+                <td style='color:green;'><b>PASS</b></td>
+                <td colspan='3' style='text-align:center;'>All kernel parameters match baseline</td>
+              </tr>
+<tr>
+                <td>sdw2</td>
+                <td style='color:green;'><b>PASS</b></td>
+                <td colspan='3' style='text-align:center;'>All kernel parameters match baseline</td>
+              </tr>
+</table>
+<section><h2>Greenplum Cluster Component Details Log</h2>
+<h3>GP Segments Status</h3><pre>20260402:18:38:08:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Starting gpstate with args: -s
+20260402:18:38:08:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a'
+20260402:18:38:08:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-coordinator Greenplum Version: 'PostgreSQL 12.22 (Greenplum Database 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a) on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Jun 10 2025 07:31:20 Bhuvnesh C.'
+20260402:18:38:08:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Obtaining Segment details from coordinator...
+20260402:18:38:08:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Gathering data from segments...
+.
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--Coordinator Configuration &amp; Status
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Coordinator host                  = cdw
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Coordinator postgres process ID   = 3520070
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Coordinator data directory        = /data/coordinator/gpseg-1
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Coordinator port                  = 5432
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Coordinator current role          = dispatch
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Greenplum initsystem version      = 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Greenplum current version         = PostgreSQL 12.22 (Greenplum Database 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a) on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Jun 10 2025 07:31:20 Bhuvnesh C.
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Postgres version                  = 12.22
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Coordinator standby               = No coordinator standby configured
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Segment Instance Status Report
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm02.pve.lvn.broadcom.net
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw1
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/primary/gpseg0
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 6000
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Primary
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Primary
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Synchronized
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current write location                = 8/DDBB5878
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes remaining to send to mirror     = 0
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3200783
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Database status                       = Up
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm03.pve.lvn.broadcom.net
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw2
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/mirror/gpseg0
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 16000
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Mirror
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Mirror
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Streaming
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Sent Location                     = 8/DDBB5878
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Flush Location                    = 8/DDBB5878
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Replay Location                   = 8/DDBB5878
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to flush    = 0
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to replay   = 0
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3213336
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Segment status                        = Up
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm02.pve.lvn.broadcom.net
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw1
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/primary/gpseg1
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 6001
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Primary
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Primary
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Synchronized
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current write location                = 8/8CD5AF10
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes remaining to send to mirror     = 0
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3200811
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Database status                       = Up
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm03.pve.lvn.broadcom.net
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw2
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/mirror/gpseg1
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 16001
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Mirror
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Mirror
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Streaming
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Sent Location                     = 8/8CD5AF10
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Flush Location                    = 8/8CD5AF10
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Replay Location                   = 8/8CD5AF10
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to flush    = 0
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to replay   = 0
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3213371
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Segment status                        = Up
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm03.pve.lvn.broadcom.net
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw2
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/primary/gpseg2
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 6000
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Primary
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Primary
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Synchronized
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current write location                = 8/8C4474A8
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes remaining to send to mirror     = 0
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3213429
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Database status                       = Up
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm02.pve.lvn.broadcom.net
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw1
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/mirror/gpseg2
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 16000
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Mirror
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Mirror
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Streaming
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Sent Location                     = 8/8C4474A8
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Flush Location                    = 8/8C4474A8
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Replay Location                   = 8/8C4474A8
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to flush    = 0
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to replay   = 0
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3200876
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Segment status                        = Up
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm03.pve.lvn.broadcom.net
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw2
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/primary/gpseg3
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 6001
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Primary
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Primary
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Synchronized
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current write location                = 8/97BF2348
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes remaining to send to mirror     = 0
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3213439
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Database status                       = Up
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm02.pve.lvn.broadcom.net
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw1
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/mirror/gpseg3
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 16001
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Mirror
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Mirror
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Streaming
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Sent Location                     = 8/97BF2348
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Flush Location                    = 8/97BF2348
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Replay Location                   = 8/97BF2348
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to flush    = 0
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to replay   = 0
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3200895
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260402:18:38:10:894165 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Segment status                        = Up</pre>
+<h3>Standby Coordinator Status</h3><pre>20260402:18:38:10:894296 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Starting gpstate with args: -f
+20260402:18:38:11:894296 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a'
+20260402:18:38:11:894296 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-coordinator Greenplum Version: 'PostgreSQL 12.22 (Greenplum Database 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a) on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Jun 10 2025 07:31:20 Bhuvnesh C.'
+20260402:18:38:11:894296 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Obtaining Segment details from coordinator...
+20260402:18:38:11:894296 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Standby coordinator instance not configured
+20260402:18:38:11:894296 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--------------------------------------------------------------
+20260402:18:38:11:894296 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--pg_stat_replication
+20260402:18:38:11:894296 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--------------------------------------------------------------
+20260402:18:38:11:894296 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-No entries found.
+20260402:18:38:11:894296 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--------------------------------------------------------------</pre>
+<h3>Mirror Segment Status</h3><pre>20260402:18:38:10:894273 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Starting gpstate with args: -m
+20260402:18:38:10:894273 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a'
+20260402:18:38:10:894273 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-coordinator Greenplum Version: 'PostgreSQL 12.22 (Greenplum Database 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a) on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Jun 10 2025 07:31:20 Bhuvnesh C.'
+20260402:18:38:10:894273 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Obtaining Segment details from coordinator...
+20260402:18:38:10:894273 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--------------------------------------------------------------
+20260402:18:38:10:894273 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--Current GPDB mirror list and status
+20260402:18:38:10:894273 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--Type = Group
+20260402:18:38:10:894273 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--------------------------------------------------------------
+20260402:18:38:10:894273 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirror   Datadir               Port    Status    Data Status    
+20260402:18:38:10:894273 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   sdw2     /data/mirror/gpseg0   16000   Passive   Synchronized
+20260402:18:38:10:894273 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   sdw2     /data/mirror/gpseg1   16001   Passive   Synchronized
+20260402:18:38:10:894273 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   sdw1     /data/mirror/gpseg2   16000   Passive   Synchronized
+20260402:18:38:10:894273 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   sdw1     /data/mirror/gpseg3   16001   Passive   Synchronized
+20260402:18:38:10:894273 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--------------------------------------------------------------</pre>
+<h3>Catalog Integrity Check</h3><pre>Truncated batch size to number of primaries: 5
+
+Connected as user 'gpadmin' to database 'rcaf', port '5432', gpdb version '7.5'
+-------------------------------------------------------------------
+Batch size: 5
+Performing test 'unique_index_violation'
+Total runtime for test 'unique_index_violation': 0:00:00.82
+Performing test 'duplicate'
+Total runtime for test 'duplicate': 0:00:03.99
+Performing test 'missing_extraneous'
+Total runtime for test 'missing_extraneous': 0:00:00.60
+Performing test 'inconsistent'
+Total runtime for test 'inconsistent': 0:00:03.56
+Performing test 'foreign_key'
+Total runtime for test 'foreign_key': 0:00:01.25
+Performing test 'pgclass'
+Total runtime for test 'pgclass': 0:00:00.04
+Performing test 'namespace'
+Total runtime for test 'namespace': 0:00:00.01
+Performing test 'distribution_policy'
+Total runtime for test 'distribution_policy': 0:00:00.00
+Performing test 'dependency'
+Total runtime for test 'dependency': 0:00:00.13
+Performing test 'part_integrity'
+Total runtime for test 'part_integrity': 0:00:00.04
+Performing test 'orphaned_toast_tables'
+Total runtime for test 'orphaned_toast_tables': 0:00:00.07
+Performing test 'aoseg_table'
+Total runtime for test 'aoseg_table': 0:00:00.00
+Performing test 'ao_lastrownums'
+Total runtime for test 'ao_lastrownums': 0:00:00.00
+Performing test 'mix_distribution_policy'
+Total runtime for test 'mix_distribution_policy': 0:00:00.00
+
+SUMMARY REPORT: PASSED
+===================================================================
+Completed 14 test(s) on database 'rcaf' at 2026-04-02 18:38:22 with elapsed time 0:00:10
+Found no catalog issue</pre>
+<h3>Disk Free</h3><pre>[sdw2] df -h | grep -v tmpfs | grep -v overlay
+[sdw2] Filesystem                                   Size  Used Avail Use% Mounted on
+[sdw2] efivarfs                                     256K   57K  195K  23% /sys/firmware/efi/efivars
+[sdw2] /dev/mapper/rl_dhcp--10--159--237--231-root   70G   14G   57G  20% /
+[sdw2] /dev/sda2                                    960M  474M  487M  50% /boot
+[sdw2] /dev/mapper/rl_dhcp--10--159--237--231-home  497G  4.0G  493G   1% /home
+[sdw2] /dev/sda1                                    599M  7.1M  592M   2% /boot/efi
+[sdw1] df -h | grep -v tmpfs | grep -v overlay
+[sdw1] Filesystem                                   Size  Used Avail Use% Mounted on
+[sdw1] efivarfs                                     256K   57K  195K  23% /sys/firmware/efi/efivars
+[sdw1] /dev/mapper/rl_dhcp--10--159--237--228-root   70G   15G   56G  21% /
+[sdw1] /dev/sda2                                    960M  474M  487M  50% /boot
+[sdw1] /dev/mapper/rl_dhcp--10--159--237--228-home  497G  4.0G  493G   1% /home
+[sdw1] /dev/sda1                                    599M  7.1M  592M   2% /boot/efi
+[ cdw] df -h | grep -v tmpfs | grep -v overlay
+[ cdw] Filesystem           Size  Used Avail Use% Mounted on
+[ cdw] efivarfs             256K   57K  195K  23% /sys/firmware/efi/efivars
+[ cdw] /dev/mapper/rl-root   70G   21G   50G  30% /
+[ cdw] /dev/sda2            960M  555M  406M  58% /boot
+[ cdw] /dev/mapper/rl-home  497G  4.4G  493G   1% /home
+[ cdw] /dev/sda1            599M  7.1M  592M   2% /boot/efi</pre>
+<h3>CPU Usage</h3><pre>Host,Avg Total CPU,Avg User CPU,Avg System CPU,Avg Idle CPU,Max Total CPU,Max User CPU,Max System CPU,Max Idle CPU
+lvn-greenplum-vm03.pve.lvn.broadcom.net,0.23806602149915007,0.08093589037617462,0.15713013112296995,99.66110870966521,6.454203746347169,2.9427827932573196,4.814931541554769,99.82693416403194
+lvn-greenplum-vm02.pve.lvn.broadcom.net,0.22466915355000325,0.07489309011387811,0.14977606343612068,99.66957878552172,6.5849038411936585,3.0415930628219683,4.60078946541747,99.83012275041565
+cdw,0.22200927044436186,0.11103035814133463,0.11097891230302452,99.7036760707397,6.870411270836962,2.497915731776103,5.396048469874694,99.83011730528816
+(3 rows)</pre>
+<h3>MTU</h3><pre>[sdw2] ip link show | grep -i mtu
+[sdw2] 1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+[sdw2] 2: ens34: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+[ cdw] ip link show | grep -i mtu
+[ cdw] 1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+[ cdw] 2: ens34: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+[ cdw] 5: podman1: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+[ cdw] 6: veth0@if2: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master podman1 state UP mode DEFAULT group default qlen 1000
+[sdw1] ip link show | grep -i mtu
+[sdw1] 1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+[sdw1] 2: ens34: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000</pre>
+<h3>Resource Group and Memory Param</h3><pre>\n==================== gp_vmem_protect_limit ====================\nValues on all segments are consistent
+GUC              : gp_vmem_protect_limit
+Coordinator value: 8192
+Segment     value: 8192\n\n==================== statement_mem ====================\nValues on all segments are consistent
+GUC              : statement_mem
+Coordinator value: 125MB
+Segment     value: 125MB\n\n==================== max_statement_mem ====================\nValues on all segments are consistent
+GUC              : max_statement_mem
+Coordinator value: 2000MB
+Segment     value: 2000MB\n\n==================== shared_buffers ====================\nValues on all segments are consistent
+GUC              : shared_buffers
+Coordinator value: 125MB
+Segment     value: 125MB\n\n==================== gp_resgroup_memory_policy ====================\nValues on all segments are consistent
+GUC              : gp_resgroup_memory_policy
+Coordinator value: eager_free
+Segment     value: eager_free\n\n==================== gp_resource_manager ====================\nValues on all segments are consistent
+GUC              : gp_resource_manager
+Coordinator value: none
+Segment     value: none\n\n==================== gp_instrument_shmem_size ====================\nValues on all segments are consistent
+GUC              : gp_instrument_shmem_size
+Coordinator value: 5MB
+Segment     value: 5MB\n</pre>
+</section>
+<h2>Greenplum Cluster DB Data SKEW / STATS / BLOAT Tests</h2>
+<section><h3>Database Name: rcaf</h3><pre>
+ skcoid | skcnamespace |                          skcrelname                           |         skccoeff         
+--------+--------------+---------------------------------------------------------------+--------------------------
+ 215433 | public       | satellite_json                                                | 88.043097763079502664000
+ 214634 | public       | satellite_actual_data                                         | 75.729379756332220249000
+  78936 | public       | gprabbitmq_satellite_staging_3f2db2ea366e3d28abce221b8ea1c16d |                        0
+ 197963 | public       | gprabbitmq_test_0ea2b81edea4431d23f40e5cb987e162              |                        0
+  75592 | public       | gprabbitmq_satellite_staging_1a169d3d202028cec9d1358eecd5bfed |                        0
+(5 rows)
+
+ sifoid | sifnamespace |                          sifrelname                           |      siffraction       
+--------+--------------+---------------------------------------------------------------+------------------------
+ 214634 | public       | satellite_actual_data                                         | 0.42691368078175895765
+ 215433 | public       | satellite_json                                                | 0.42691368078175895765
+  78936 | public       | gprabbitmq_satellite_staging_3f2db2ea366e3d28abce221b8ea1c16d |                      0
+ 197963 | public       | gprabbitmq_test_0ea2b81edea4431d23f40e5cb987e162              |                      0
+  75592 | public       | gprabbitmq_satellite_staging_1a169d3d202028cec9d1358eecd5bfed |                      0
+(5 rows)
+
+ smischema |                           smitable                            | smisize | smicols | smirecs 
+-----------+---------------------------------------------------------------+---------+---------+---------
+ public    | gprabbitmq_test_0ea2b81edea4431d23f40e5cb987e162              | f       |       7 |       0
+ public    | gprabbitmq_satellite_staging_3f2db2ea366e3d28abce221b8ea1c16d | f       |       7 |       0
+ public    | gprabbitmq_satellite_staging_1a169d3d202028cec9d1358eecd5bfed | f       |       7 |       0
+(3 rows)
+
+ bdirelid | bdinspname | bdirelname | bdirelpages | bdiexppages | bdidiag 
+----------+------------+------------+-------------+-------------+---------
+(0 rows)
+
+     extname     | extversion | extrelocatable | extconfig | extcondition 
+-----------------+------------+----------------+-----------+--------------
+ plpgsql         | 1.0        | f              |           | 
+ gp_exttable_fdw | 1.0        | f              |           | 
+ gpss            | 1.0        | t              |           | 
+ dataflow        | 1.0        | t              |           | 
+ gp_toolkit      | 1.18       | f              |           | 
+ pxf             | 3.0        | f              |           | 
+(6 rows)
+
+</pre></section>
+<section><h3>Database Name: gpperfmon</h3><pre>
+ERROR:  relation "gp_toolkit.gp_skew_coefficients" does not exist
+LINE 1: SELECT * FROM gp_toolkit.gp_skew_coefficients ORDER BY skcco...
+                      ^
+ERROR:  relation "gp_toolkit.gp_skew_idle_fractions" does not exist
+LINE 1: SELECT * FROM gp_toolkit.gp_skew_idle_fractions ORDER BY sif...
+                      ^
+ERROR:  relation "gp_toolkit.gp_stats_missing" does not exist
+LINE 1: SELECT * FROM gp_toolkit.gp_stats_missing LIMIT 20;
+                      ^
+ERROR:  relation "gp_toolkit.gp_bloat_diag" does not exist
+LINE 1: SELECT * FROM gp_toolkit.gp_bloat_diag LIMIT 20;
+                      ^
+      extname      | extversion | extrelocatable | extconfig | extcondition 
+-------------------+------------+----------------+-----------+--------------
+ plpgsql           | 1.0        | f              |           | 
+ gp_exttable_fdw   | 1.0        | f              |           | 
+ plpython3u        | 1.0        | f              |           | 
+ metrics_collector | 1.0        | f              |           | 
+(4 rows)
+
+</pre></section>
+<section><h3>Database Name: gp_wcc</h3><pre>
+ERROR:  relation "gp_toolkit.gp_skew_coefficients" does not exist
+LINE 1: SELECT * FROM gp_toolkit.gp_skew_coefficients ORDER BY skcco...
+                      ^
+ERROR:  relation "gp_toolkit.gp_skew_idle_fractions" does not exist
+LINE 1: SELECT * FROM gp_toolkit.gp_skew_idle_fractions ORDER BY sif...
+                      ^
+ERROR:  relation "gp_toolkit.gp_stats_missing" does not exist
+LINE 1: SELECT * FROM gp_toolkit.gp_stats_missing LIMIT 20;
+                      ^
+ERROR:  relation "gp_toolkit.gp_bloat_diag" does not exist
+LINE 1: SELECT * FROM gp_toolkit.gp_bloat_diag LIMIT 20;
+                      ^
+     extname     | extversion | extrelocatable | extconfig | extcondition 
+-----------------+------------+----------------+-----------+--------------
+ plpgsql         | 1.0        | f              |           | 
+ gp_exttable_fdw | 1.0        | f              |           | 
+(2 rows)
+
+</pre></section>
+<h2>Greenplum Health Check HTML Report Completed: Thu Apr  2 06:41:45 PM EDT 2026 </h2>
+<h3>Inspect the Greenplum HTML report for any confidential information before sending it to the Tanzu account team</h3>
+</body></html>
