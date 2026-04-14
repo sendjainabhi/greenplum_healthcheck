@@ -24,7 +24,7 @@ In the Greenplum we perform following tests
 
 - **Resource Group and Memory Param:** Validates that Global Configuration Parameters (GUCs) for memory management—such as shared_buffers and statement_mem—are consistent across all segments.
 
-- Kernel Parameter Compliance: Compares OS-level kernel settings on each host against a defined baseline for Greenplum compatibility.
+- **Kernel Parameter Compliance:** Compares OS-level kernel settings on each host against a defined baseline for Greenplum compatibility.
 
 ### Database Performance & Health Tests
 - **Data Skew Test:** Measures data distribution across segments by calculating the skew coefficient (skccoeff) and idle fractions to find tables that are not evenly distributed.
