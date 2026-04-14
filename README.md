@@ -3,7 +3,7 @@
 
 # Greenplum Healthcheck
 
-## Greenplum helath Test 
+## Greenplum Health Tests 
 
 In the Greenplum we perform following tests 
 
