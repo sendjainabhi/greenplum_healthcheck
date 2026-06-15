@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greenplum Health Report</title>
+<style>
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body   { font-family: "Segoe UI", Arial, sans-serif; background: #f0f2f5;
+         color: #1a1a2e; font-size: 14px; line-height: 1.5; }
+
+/* ── Top nav bar ── */
+.topnav { position: sticky; top: 0; z-index: 100; background: #002855;
+          display: flex; gap: 4px; padding: 6px 16px; flex-wrap: wrap;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+.topnav a { color: #a8c6f0; text-decoration: none; padding: 4px 10px;
+            border-radius: 4px; font-size: 0.82em; white-space: nowrap; }
+.topnav a:hover { background: #1a4a8a; color: white; }
+.topnav .logo  { color: white; font-weight: bold; font-size: 0.9em;
+                 margin-right: 10px; align-self: center; }
+
+/* ── Page header ── */
+.page-header { background: linear-gradient(135deg,#004d99,#002855);
+               padding: 18px 24px; color: white; }
+.page-header h1 { font-size: 1.5em; margin-bottom: 6px; }
+.page-header .meta { font-size: 0.82em; color: #b0c8e8; }
+
+/* ── Version strip ── */
+.ver-strip { background: #dce6f5; border-left: 4px solid #004d99;
+             padding: 8px 20px; font-size: 0.85em; color: #333; }
+
+/* ── Scorecard ── */
+.scorecard { display: flex; gap: 12px; padding: 14px 16px; flex-wrap: wrap;
+             background: #fff; border-bottom: 1px solid #dde; }
+.score-box { flex: 1; min-width: 120px; border-radius: 8px; padding: 12px 8px;
+             text-align: center; color: white; font-weight: bold;
+             font-size: 1.6em; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+.score-box span { display: block; font-size: 0.42em; font-weight: normal;
+                  letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
+.s-fail { background: #c0392b; }
+.s-pass { background: #27ae60; }
+.s-skip { background: #e67e22; }
+
+/* ── Banners ── */
+.banner { padding: 12px 20px; margin: 12px 16px; border-radius: 6px;
+          font-size: 1em; font-weight: bold; }
+.banner-fail { background: #fdedec; color: #922b21;
+               border-left: 6px solid #c0392b; }
+.banner-pass { background: #eafaf1; color: #1e8449;
+               border-left: 6px solid #27ae60; }
+
+/* ── Section card ── */
+.section { background: white; margin: 14px 16px; border-radius: 8px;
+           box-shadow: 0 1px 4px rgba(0,0,0,0.08); overflow: hidden; }
+.section-header { padding: 10px 16px; color: white; font-weight: bold;
+                  font-size: 1em; display: flex; align-items: center; gap: 8px; }
+.section-body   { padding: 14px 16px; }
+.sh-blue   { background: #004d99; }
+.sh-teal   { background: #0e7c7b; }
+.sh-purple { background: #6c3483; }
+.sh-orange { background: #ca6f1e; }
+.sh-green  { background: #1e8449; }
+.sh-red    { background: #922b21; }
+.sh-gray   { background: #566573; }
+
+/* ── Summary table ── */
+table   { border-collapse: collapse; width: 100%; font-size: 0.88em; }
+th, td  { border: 1px solid #d5d8dc; padding: 7px 10px;
+          vertical-align: top; text-align: left; }
+th      { background: #dce6f1; color: #003366; font-weight: 600; }
+
+/* Category separator rows */
+.cat-row td { background: #f2f3f4; color: #555; font-weight: bold;
+              font-size: 0.8em; letter-spacing: 1px; text-transform: uppercase;
+              padding: 5px 10px; border-top: 2px solid #bbb; }
+
+/* Row-level colours */
+.r-pass td { background: #f0faf4; }
+.r-fail td { background: #fdf2f2; }
+.r-skip td { background: #fef9ee; }
+.r-fail .col-status { color: #c0392b; font-weight: bold; }
+.r-pass .col-status { color: #1e8449; font-weight: bold; }
+.r-skip .col-status { color: #d68910; font-weight: bold; }
+
+/* Columns */
+.col-name   { min-width: 160px; }
+.col-prio   { width: 70px;  text-align: center; }
+.col-status { width: 80px;  text-align: center; }
+.col-bench  { width: 16%;   color: #555; font-style: italic; font-size: 0.85em; }
+.col-actual { width: 16%; }
+.col-detail { width: 18%; }
+.col-remedy { width: 22%; font-size: 0.84em; }
+.r-fail .col-remedy { background: #fff3ef; color: #6e2510; }
+.r-skip .col-remedy { background: #fffbf0; color: #6e4c10; }
+
+/* ── Failure summary panel ── */
+.fail-summary { margin: 12px 16px; border-radius: 8px; overflow: hidden;
+                border: 1px solid #e8a09a; }
+.fail-summary-hdr { background: #922b21; color: white; padding: 10px 16px;
+                    font-weight: bold; font-size: 0.95em; }
+.fail-summary table { font-size: 0.86em; }
+.fail-summary th { background: #f9e8e6; color: #6e2510; }
+.fs-remedy { background: #fff8f5; color: #6e2510; font-style: italic; }
+
+/* Priority badges */
+.prio { display: inline-block; padding: 1px 7px; border-radius: 10px;
+        font-size: 0.75em; font-weight: bold; }
+.p-crit   { background: #922b21; color: white; }
+.p-high   { background: #d35400; color: white; }
+.p-med    { background: #7d6608; color: white; }
+
+/* Status pills */
+.pill { display: inline-block; padding: 2px 9px; border-radius: 12px;
+        font-size: 0.85em; font-weight: bold; }
+.pill-pass { background: #27ae60; color: white; }
+.pill-fail { background: #c0392b; color: white; }
+.pill-skip { background: #e67e22; color: white; }
+
+/* ── Per-DB table (Bloat/Skew) ── */
+.tbl-pass { background: #d5f5e3; color: #1e8449; font-weight: bold; }
+.tbl-fail { background: #fadbd8; color: #c0392b; font-weight: bold; }
+
+/* ── Kernel table ── */
+.k-pass { background: #d5f5e3; color: #1e8449; font-weight: bold; text-align:center; }
+.k-fail { background: #fadbd8; color: #c0392b; font-weight: bold; text-align:center; }
+.k-exp  { color: #555; font-style: italic; }
+
+/* ── Collapsible detail logs ── */
+details { margin-bottom: 10px; border: 1px solid #dde; border-radius: 6px;
+          overflow: hidden; }
+summary { padding: 9px 14px; cursor: pointer; font-weight: bold;
+          font-size: 0.9em; list-style: none; display: flex;
+          align-items: center; gap: 10px; user-select: none; }
+summary::-webkit-details-marker { display: none; }
+summary::before { content: "▶"; font-size: 0.7em; transition: transform 0.2s; }
+details[open] summary::before { transform: rotate(90deg); }
+.det-pass summary { background: #eafaf1; border-left: 4px solid #27ae60; }
+.det-fail summary { background: #fdedec; border-left: 4px solid #c0392b; }
+.det-skip summary { background: #fef9e7; border-left: 4px solid #e67e22; }
+.det-body { padding: 0; }
+pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
+      font-family: "Courier New", monospace; border-top: 1px solid #ddd;
+      white-space: pre-wrap; word-break: break-word; margin: 0; }
+
+/* ── Infrastructure overview cards ── */
+.infra-overview { background: #fff; border-bottom: 2px solid #d0dcea;
+                  padding: 12px 16px; }
+.infra-overview-title { font-size: 0.78em; font-weight: bold; color: #004d99;
+                        text-transform: uppercase; letter-spacing: 1px;
+                        margin-bottom: 10px; }
+.infra-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.infra-card { background: #f4f7fb; border: 1px solid #cad8ec; border-radius: 6px;
+              padding: 8px 14px; min-width: 130px; flex: 0 0 auto; }
+.infra-label { display: block; font-size: 0.69em; color: #5a6a80;
+               text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 3px; }
+.infra-val { display: block; font-size: 0.92em; font-weight: 700; color: #002855;
+             word-break: break-word; }
+.infra-val.warn { color: #c0392b; }
+
+/* ── Print ── */
+@media print {
+  .topnav, .banner { display: none; }
+  .section { box-shadow: none; border: 1px solid #ccc; }
+  details { display: block; }
+  details summary::before { display: none; }
+  pre { font-size: 0.75em; }
+}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <span class="logo">GP HealthCheck V3</span>
+  <a href="#summary">&#128203; Summary</a>
+  <a href="#fail-summary">&#9888; Failures</a>
+  <a href="#bloat-skew">&#128202; Bloat / Skew</a>
+  <a href="#kernel">&#9881; Kernel Params</a>
+  <a href="#detail-logs">&#128196; Detail Logs</a>
+  <a href="#db-detail">&#128260; DB Detail</a>
+</nav>
+
+<div class="page-header">
+  <h1>Test &mdash; Greenplum Health Check Report</h1>
+  <div class="meta">Generated: Mon Jun 15 06:34:45 PM EDT 2026 &nbsp;|&nbsp; Report file: /home/gpadmin/Test_gp_healthcheck_report_20260615_183445.html</div>
+</div>
+
+<div class="ver-strip">
+  <b>GP7</b> &nbsp;|&nbsp; PostgreSQL 12.22 (Greenplum Database 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a) on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Jun 10 2025 07:31:20 Bhuvnesh C. &nbsp;|&nbsp; Port: 5432
+</div>
+
+<div class="infra-overview">
+  <div class="infra-overview-title">&#128202; Cluster Infrastructure Overview</div>
+  <div class="infra-grid">
+    <div class="infra-card">
+      <span class="infra-label">Coordinator</span>
+      <span class="infra-val">cdw</span>
+    </div>
+    <div class="infra-card">
+      <span class="infra-label">Standby Coordinator</span>
+      <span class="infra-val">not configured</span>
+    </div>
+    <div class="infra-card">
+      <span class="infra-label">Segment Hosts</span>
+      <span class="infra-val">2</span>
+    </div>
+    <div class="infra-card">
+      <span class="infra-label">Primary Segments</span>
+      <span class="infra-val">4 (2/host)</span>
+    </div>
+    <div class="infra-card">
+      <span class="infra-label">Mirrors</span>
+      <span class="infra-val">unknown</span>
+    </div>
+    <div class="infra-card">
+      <span class="infra-label">Databases</span>
+      <span class="infra-val">3</span>
+    </div>
+    <div class="infra-card">
+      <span class="infra-label">Total Data Size</span>
+      <span class="infra-val">5186 MB</span>
+    </div>
+    <div class="infra-card">
+      <span class="infra-label">Max Connections</span>
+      <span class="infra-val">250</span>
+    </div>
+    <div class="infra-card">
+      <span class="infra-label">Resource Manager</span>
+      <span class="infra-val">none</span>
+    </div>
+    <div class="infra-card">
+      <span class="infra-label">Cluster Started</span>
+      <span class="infra-val">2025-11-24 17:28:18</span>
+    </div>
+    <div class="infra-card">
+      <span class="infra-label">OS</span>
+      <span class="infra-val">Rocky Linux 9.6 (Blue Onyx)</span>
+    </div>
+    <div class="infra-card">
+      <span class="infra-label">Kernel</span>
+      <span class="infra-val">5.14.0-570.49.1.el9_6.x86_64</span>
+    </div>
+    <div class="infra-card">
+      <span class="infra-label">Hosts in Hostfile</span>
+      <span class="infra-val">2</span>
+    </div>
+  </div>
+</div>
+<div class="scorecard">
+  <div class="score-box s-fail">3<span>Failed</span></div>
+  <div class="score-box s-pass">19<span>Passed</span></div>
+  <div class="score-box s-skip">2<span>Skipped / Suggestions</span></div>
+</div>
+<div class='banner banner-fail'>&#9888;&nbsp; 3 CHECK(S) FAILED &mdash; Review highlighted rows below and share this report with the Tanzu account team.</div>
+<a id='fail-summary'></a>
+<div class='fail-summary'>
+<div class='fail-summary-hdr'>&#9888;&nbsp; Failure Summary &mdash; 3 check(s) require immediate attention</div>
+<div class='section-body'>
+<table>
+<thead>
+<tr>
+  <th class='col-name'>Check</th>
+  <th class='col-prio'>Priority</th>
+  <th class='col-actual'>What Was Found</th>
+  <th class='col-detail'>Failure Reason</th>
+  <th class='col-remedy'>Recommended Action</th>
+</tr>
+</thead>
+<tbody>
+<tr class='r-fail'>
+  <td class='col-name'><b>Transparent Huge Pages</b></td>
+  <td class='col-prio'><span class='prio p-crit'>Critical</span></td>
+  <td class='col-actual'>THP=always on hosts: sdw1 sdw2 </td>
+  <td class='col-detail'>THP=[always] on: sdw1 sdw2 — causes latency spikes; set to never or madvise</td>
+  <td class='col-remedy fs-remedy'>&#128295;&nbsp;As root on each affected host: echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled. Persist via /etc/rc.d/rc.local or a tuned profile. Requires OS-level access.</td>
+</tr>
+<tr class='r-fail'>
+  <td class='col-name'><b>Swap Usage</b></td>
+  <td class='col-prio'><span class='prio p-high'>High</span></td>
+  <td class='col-actual'>Swap used on: sdw2(32211MB) sdw1(32211MB) </td>
+  <td class='col-detail'>Swap in use on: sdw2(32211MB) sdw1(32211MB) — memory pressure detected; queries will be degraded</td>
+  <td class='col-remedy fs-remedy'>&#128295;&nbsp;Reduce gp_vmem_protect_limit. Set vm.swappiness=10 in /etc/sysctl.conf and run 'sysctl -p'. Add RAM or reduce concurrent query workload. Requires OS-level access.</td>
+</tr>
+<tr class='r-fail'>
+  <td class='col-name'><b>Trust Authentication</b></td>
+  <td class='col-prio'><span class='prio p-crit'>Critical</span></td>
+  <td class='col-actual'>6 non-local trust auth rule(s) in pg_hba.conf</td>
+  <td class='col-detail'>6 non-local trust auth rule(s) — users can connect without a password from these addresses</td>
+  <td class='col-remedy fs-remedy'>&#128295;&nbsp;Change 'trust' to 'scram-sha-256' or 'md5' in pg_hba.conf for non-local entries. Reload with 'gpstop -u'. Assign strong passwords to all login roles.</td>
+</tr>
+</tbody></table></div></div>
+<a id='summary'></a>
+<div class='section'>
+<div class='section-header sh-blue'>&#128203; Greenplum Health Check Summary &mdash; 24 Checks</div>
+<div class='section-body'>
+<table>
+<thead>
+<tr>
+  <th class='col-name'>Check</th>
+  <th class='col-prio'>Priority</th>
+  <th class='col-status'>Status</th>
+  <th class='col-bench'>Benchmark / Expected</th>
+  <th class='col-actual'>Actual Value Found</th>
+  <th class='col-detail'>Failure Reason / Details</th>
+  <th class='col-remedy'>Possible Remedy</th>
+</tr>
+</thead>
+<tbody>
+<tr class='cat-row'><td colspan='7'>Cluster Health</td></tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>GP Segments Status</b></td>
+  <td class='col-prio'><span class='prio p-crit'>Critical</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>All primaries UP (status=u, mode=s or n)</td>
+  <td class='col-actual'>All primary segments reporting UP</td>
+  <td class='col-detail'>gpstate -s exited cleanly — primary segments healthy</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>Mirror Segment Status</b></td>
+  <td class='col-prio'><span class='prio p-crit'>Critical</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>All mirrors synchronized (mode=s)</td>
+  <td class='col-actual'>All mirrors in synchronized state</td>
+  <td class='col-detail'>All mirrors synchronized with primaries</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>Standby Coordinator Status</b></td>
+  <td class='col-prio'><span class='prio p-high'>High</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>Standby configured and replicating</td>
+  <td class='col-actual'>Standby coordinator replicating (gpstate -f OK)</td>
+  <td class='col-detail'>Standby coordinator available and replicating</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+<tr class='r-skip'>
+  <td class='col-name'><b>Replication Lag</b></td>
+  <td class='col-prio'><span class='prio p-high'>High</span></td>
+  <td class='col-status'><span class='pill pill-skip'>SUGGESTION</span></td>
+  <td class='col-bench'>Standby lag &lt; 100 MB</td>
+  <td class='col-actual'>0 standby connections detected</td>
+  <td class='col-detail'>No standby replication connections found in pg_stat_replication</td>
+  <td class='col-remedy'>Check network bandwidth and standby host I/O. Review pg_stat_replication for details. Re-initialise standby replication if lag is stuck.</td>
+</tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>Catalog Integrity Check</b></td>
+  <td class='col-prio'><span class='prio p-crit'>Critical</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>0 catalog inconsistencies</td>
+  <td class='col-actual'>0 catalog issues found</td>
+  <td class='col-detail'>No catalog inconsistencies detected</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+<tr class='cat-row'><td colspan='7'>Database Reliability</td></tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>XID Wraparound Risk</b></td>
+  <td class='col-prio'><span class='prio p-crit'>Critical</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>XID age &lt; 500 M (warning) / &lt; 1.5 B (critical)</td>
+  <td class='col-actual'>Max XID age: 3244110 on DB: postgres</td>
+  <td class='col-detail'>Max XID age 3244110 is well within safe range</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>Connection Saturation</b></td>
+  <td class='col-prio'><span class='prio p-high'>High</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>&lt; 80% of max_connections in use</td>
+  <td class='col-actual'>10/250 connections used (4.0%)</td>
+  <td class='col-detail'>10/250 connections (4.0%) within safe range</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>Long Running Queries</b></td>
+  <td class='col-prio'><span class='prio p-high'>High</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>0 queries running &gt; 1 hour; 0 idle-in-transaction &gt; 30 min</td>
+  <td class='col-actual'>0 queries &gt;1 hour; 0 idle-in-transaction &gt;30 min</td>
+  <td class='col-detail'>No queries &gt;1 hour and no idle-in-transaction &gt;30 min detected</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>Lock Waits</b></td>
+  <td class='col-prio'><span class='prio p-high'>High</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>0 ungranted locks</td>
+  <td class='col-actual'>0 ungranted lock(s) at time of check</td>
+  <td class='col-detail'>No lock waits detected at time of report</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+<tr class='cat-row'><td colspan='7'>Storage & Maintenance</td></tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>Disk Free</b></td>
+  <td class='col-prio'><span class='prio p-high'>High</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>All nodes &gt;= 25% free disk</td>
+  <td class='col-actual'>Lowest free: 50% on sdw2</td>
+  <td class='col-detail'>All disks &gt;= 25% free</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>Tables Needing VACUUM</b></td>
+  <td class='col-prio'><span class='prio p-high'>High</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>0 tables with &gt; 10,000 dead tuples or never vacuumed</td>
+  <td class='col-actual'>0 table(s) with &gt;10k dead tuples or never vacuumed</td>
+  <td class='col-detail'>No tables with significant dead tuple accumulation</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+<tr class='cat-row'><td colspan='7'>OS / Infrastructure</td></tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>CPU Usage</b></td>
+  <td class='col-prio'><span class='prio p-high'>High</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>30-day Avg &lt;= 80%, 30-day Peak &lt;= 95%</td>
+  <td class='col-actual'>30-day Avg: 1%, 30-day Peak: 13%</td>
+  <td class='col-detail'>Avg=1%, Peak=13% — within limits</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+<tr class='r-fail'>
+  <td class='col-name'><b>Transparent Huge Pages</b></td>
+  <td class='col-prio'><span class='prio p-crit'>Critical</span></td>
+  <td class='col-status'><span class='pill pill-fail'>FAIL</span></td>
+  <td class='col-bench'>THP = never or madvise on all hosts (NOT always)</td>
+  <td class='col-actual'>THP=always on hosts: sdw1 sdw2 </td>
+  <td class='col-detail'>THP=[always] on: sdw1 sdw2 — causes latency spikes; set to never or madvise</td>
+  <td class='col-remedy'>As root on each affected host: echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled. Persist via /etc/rc.d/rc.local or a tuned profile. Requires OS-level access.</td>
+</tr>
+<tr class='r-fail'>
+  <td class='col-name'><b>Swap Usage</b></td>
+  <td class='col-prio'><span class='prio p-high'>High</span></td>
+  <td class='col-status'><span class='pill pill-fail'>FAIL</span></td>
+  <td class='col-bench'>0 MB swap in use on all hosts</td>
+  <td class='col-actual'>Swap used on: sdw2(32211MB) sdw1(32211MB) </td>
+  <td class='col-detail'>Swap in use on: sdw2(32211MB) sdw1(32211MB) — memory pressure detected; queries will be degraded</td>
+  <td class='col-remedy'>Reduce gp_vmem_protect_limit. Set vm.swappiness=10 in /etc/sysctl.conf and run 'sysctl -p'. Add RAM or reduce concurrent query workload. Requires OS-level access.</td>
+</tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>File Descriptor Limits</b></td>
+  <td class='col-prio'><span class='prio p-high'>High</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>ulimit -n &gt;= 524288 on all hosts</td>
+  <td class='col-actual'>Lowest: 99999999 on </td>
+  <td class='col-detail'>All hosts have ulimit -n &gt;= 524288</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+<tr class='r-skip'>
+  <td class='col-name'><b>MTU</b></td>
+  <td class='col-prio'><span class='prio p-med'>Medium</span></td>
+  <td class='col-status'><span class='pill pill-skip'>SUGGESTION</span></td>
+  <td class='col-bench'>All interfaces MTU &gt;= 9000 (Jumbo Frames)</td>
+  <td class='col-actual'>Lowest MTU: 1500 on sdw2</td>
+  <td class='col-detail'>MTU &lt; 9000 on one or more nodes — Jumbo Frames recommended for best Greenplum network performance</td>
+  <td class='col-remedy'>Set Jumbo Frames on all hosts (as root): 'ip link set &lt;iface&gt; mtu 9000'. Persist in /etc/sysconfig/network-scripts/ifcfg-&lt;iface&gt;. Coordinate with the network team.</td>
+</tr>
+<tr class='cat-row'><td colspan='7'>Query Optimization</td></tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>GPORCA Optimizer</b></td>
+  <td class='col-prio'><span class='prio p-crit'>Critical</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>optimizer = on (GPORCA enabled)</td>
+  <td class='col-actual'>Coordinator: on, Segment: on</td>
+  <td class='col-detail'>GPORCA enabled on coordinator and all segments</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>Random Distribution Tables</b></td>
+  <td class='col-prio'><span class='prio p-crit'>Critical</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>0 user tables with DISTRIBUTED RANDOMLY</td>
+  <td class='col-actual'>0 table(s) with DISTRIBUTED RANDOMLY in user schemas</td>
+  <td class='col-detail'>No randomly distributed tables in user schemas</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>Stale Statistics</b></td>
+  <td class='col-prio'><span class='prio p-high'>High</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>All tables &gt; 10k rows analyzed within last 7 days</td>
+  <td class='col-actual'>0 table(s) &gt;10k rows with statistics older than 7 days</td>
+  <td class='col-detail'>All large tables analyzed within the last 7 days</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>Planner GUC Settings</b></td>
+  <td class='col-prio'><span class='prio p-high'>High</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>optimizer=on, enable_nestloop=off, default_statistics_target&gt;=100, gp_interconnect_type=udpifc</td>
+  <td class='col-actual'>0 of 7 settings differ from Greenplum recommendation</td>
+  <td class='col-detail'>All 7 planner GUC settings match Greenplum recommendations</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>Workfile Spill</b></td>
+  <td class='col-prio'><span class='prio p-high'>High</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>0 active queries spilling to disk</td>
+  <td class='col-actual'>0 query/queries actively spilling to disk</td>
+  <td class='col-detail'>No active workfile spill detected</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+<tr class='cat-row'><td colspan='7'>Configuration</td></tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>Resource Group and Memory Param</b></td>
+  <td class='col-prio'><span class='prio p-high'>High</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>All GUC parameters readable and consistent</td>
+  <td class='col-actual'>Checked: 6, Failed: 0, Skipped: 1</td>
+  <td class='col-detail'>All 6 GUC parameters readable and consistent</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+<tr class='cat-row'><td colspan='7'>Security</td></tr>
+<tr class='r-fail'>
+  <td class='col-name'><b>Trust Authentication</b></td>
+  <td class='col-prio'><span class='prio p-crit'>Critical</span></td>
+  <td class='col-status'><span class='pill pill-fail'>FAIL</span></td>
+  <td class='col-bench'>0 non-local trust auth rules in pg_hba.conf</td>
+  <td class='col-actual'>6 non-local trust auth rule(s) in pg_hba.conf</td>
+  <td class='col-detail'>6 non-local trust auth rule(s) — users can connect without a password from these addresses</td>
+  <td class='col-remedy'>Change 'trust' to 'scram-sha-256' or 'md5' in pg_hba.conf for non-local entries. Reload with 'gpstop -u'. Assign strong passwords to all login roles.</td>
+</tr>
+<tr class='r-pass'>
+  <td class='col-name'><b>Privileged Roles</b></td>
+  <td class='col-prio'><span class='prio p-high'>High</span></td>
+  <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
+  <td class='col-bench'>Superusers = gpadmin only; no login roles without passwords</td>
+  <td class='col-actual'>2 superuser(s), 0 login role(s) with no password</td>
+  <td class='col-detail'>2 superuser(s), 0 passwordless login role(s) — within expected range</td>
+  <td class='col-remedy'>&mdash;</td>
+</tr>
+</tbody></table></div></div>
+<a id='bloat-skew'></a>
+<div class='section'>
+<div class='section-header sh-teal'>&#128202; Data Bloat / Skew per Database</div>
+<div class='section-body'>
+<p style='font-size:0.85em;color:#555;margin-bottom:10px;'>
+  Bloat benchmark: tables &gt;1600 pages (~50MB) with bloat ratio &gt;30% flagged. &nbsp;|&nbsp;
+  Skew benchmark: skccoeff &gt;1.5 flagged.
+</p>
+<table>
+<thead>
+<tr>
+  <th>DB OID</th><th>Database</th>
+  <th>Bloat Status</th><th>Bloat Benchmark</th><th>Bloat Finding</th>
+  <th>Skew Status</th><th>Skew Benchmark</th><th>Skew Finding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>16384</td><td>rcaf</td>
+  <td class='tbl-pass'>PASS</td>
+  <td style='font-style:italic;color:#555;font-size:0.85em;'>&gt;1600 pages &amp; &gt;30% ratio</td>
+  <td>No significant bloat detected</td>
+  <td class='tbl-fail'>FAIL</td>
+  <td style='font-style:italic;color:#555;font-size:0.85em;'>skccoeff &gt;1.5</td>
+  <td>2 table(s) with skccoeff &gt;1.5 — data redistribution may help</td>
+</tr>
+<tr>
+  <td>16396</td><td>gpperfmon</td>
+  <td class='tbl-fail'>FAIL</td>
+  <td style='font-style:italic;color:#555;font-size:0.85em;'>&gt;1600 pages &amp; &gt;30% ratio</td>
+  <td>gp_toolkit schema not found</td>
+  <td class='tbl-fail'>FAIL</td>
+  <td style='font-style:italic;color:#555;font-size:0.85em;'>skccoeff &gt;1.5</td>
+  <td>gp_toolkit schema not found</td>
+</tr>
+<tr>
+  <td>1107832</td><td>gp_wcc</td>
+  <td class='tbl-fail'>FAIL</td>
+  <td style='font-style:italic;color:#555;font-size:0.85em;'>&gt;1600 pages &amp; &gt;30% ratio</td>
+  <td>gp_toolkit schema not found</td>
+  <td class='tbl-fail'>FAIL</td>
+  <td style='font-style:italic;color:#555;font-size:0.85em;'>skccoeff &gt;1.5</td>
+  <td>gp_toolkit schema not found</td>
+</tr>
+</tbody></table></div></div>
+<a id='kernel'></a>
+<div class='section'>
+<div class='section-header sh-gray'>&#9881; Kernel Parameter Compliance</div>
+<div class='section-body'>
+<p style='font-size:0.85em;color:#555;margin-bottom:10px;'>
+  Each kernel parameter is compared against the Greenplum-recommended baseline.
+  Only mismatches are shown per host — fully compliant hosts show a single PASS row.
+  Parameters not present on the running kernel (e.g. ipfrag_* on RHEL 9) are silently skipped.
+</p>
+<table>
+<thead>
+<tr style='background:#dce6f1;'>
+  <th>Host</th><th class='col-status'>Status</th>
+  <th>Kernel Parameter</th>
+  <th class='k-exp'>Expected (Benchmark)</th>
+  <th>Actual Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>sdw1</td><td class='k-pass'>PASS</td>
+  <td colspan='3' style='text-align:center;color:#1e8449;'>
+    All 28 kernel parameters match the Greenplum baseline</td>
+</tr>
+<tr>
+  <td>sdw2</td><td class='k-pass'>PASS</td>
+  <td colspan='3' style='text-align:center;color:#1e8449;'>
+    All 28 kernel parameters match the Greenplum baseline</td>
+</tr>
+</tbody></table>
+<p style='font-size:0.85em;color:#555;margin-top:8px;'>
+  <b>2</b> host(s) fully compliant &nbsp;|&nbsp;
+  <b>0</b> total kernel parameter mismatch(es) across cluster.
+</p>
+</div></div>
+<a id='detail-logs'></a>
+<div class='section'>
+<div class='section-header sh-purple'>&#128196; Cluster Component Detail Logs</div>
+<div class='section-body'>
+<p style='font-size:0.85em;color:#555;margin-bottom:12px;'>
+  Click any check to expand its raw output. Each header shows the benchmark and actual value found.
+  Entries marked FAIL contain the evidence for the failure in the output below.
+</p>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>GP Segments Status</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: All primaries UP (status=u, mode=s or n) &nbsp;|&nbsp; Found: All primary segments reporting UP
+  </span>
+</summary>
+<div class='det-body'><pre>20260615:18:34:45:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Starting gpstate with args: -s
+20260615:18:34:45:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a'
+20260615:18:34:45:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-coordinator Greenplum Version: 'PostgreSQL 12.22 (Greenplum Database 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a) on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Jun 10 2025 07:31:20 Bhuvnesh C.'
+20260615:18:34:45:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Obtaining Segment details from coordinator...
+20260615:18:34:45:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Gathering data from segments...
+..
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--Coordinator Configuration &amp; Status
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Coordinator host                  = cdw
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Coordinator postgres process ID   = 3520070
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Coordinator data directory        = /data/coordinator/gpseg-1
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Coordinator port                  = 5432
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Coordinator current role          = dispatch
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Greenplum initsystem version      = 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Greenplum current version         = PostgreSQL 12.22 (Greenplum Database 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a) on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Jun 10 2025 07:31:20 Bhuvnesh C.
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Postgres version                  = 12.22
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Coordinator standby               = No coordinator standby configured
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Segment Instance Status Report
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm02.pve.lvn.broadcom.net
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw1
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/primary/gpseg0
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 6000
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Primary
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Primary
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Synchronized
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current write location                = E/1B6A0A58
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes remaining to send to mirror     = 0
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3200783
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Database status                       = Up
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm03.pve.lvn.broadcom.net
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw2
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/mirror/gpseg0
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 16000
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Mirror
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Mirror
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Streaming
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Sent Location                     = E/1B6A0A58
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Flush Location                    = E/1B6A0A58
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Replay Location                   = E/1B6A0A58
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to flush    = 0
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to replay   = 0
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3213336
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Segment status                        = Up
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm02.pve.lvn.broadcom.net
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw1
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/primary/gpseg1
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 6001
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Primary
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Primary
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Synchronized
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current write location                = D/4F967B90
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes remaining to send to mirror     = 0
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3200811
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Database status                       = Up
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm03.pve.lvn.broadcom.net
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw2
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/mirror/gpseg1
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 16001
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Mirror
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Mirror
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Streaming
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Sent Location                     = D/4F967B90
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Flush Location                    = D/4F967B90
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Replay Location                   = D/4F967B90
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to flush    = 0
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to replay   = 0
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3213371
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Segment status                        = Up
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm03.pve.lvn.broadcom.net
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw2
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/primary/gpseg2
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 6000
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Primary
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Primary
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Synchronized
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current write location                = C/DC291F60
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes remaining to send to mirror     = 0
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3213429
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Database status                       = Up
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm02.pve.lvn.broadcom.net
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw1
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/mirror/gpseg2
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 16000
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Mirror
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Mirror
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Streaming
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Sent Location                     = C/DC291F60
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Flush Location                    = C/DC291F60
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Replay Location                   = C/DC291F60
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to flush    = 0
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to replay   = 0
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3200876
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Segment status                        = Up
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm03.pve.lvn.broadcom.net
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw2
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/primary/gpseg3
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 6001
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Primary
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Primary
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Synchronized
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current write location                = C/F347DC58
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes remaining to send to mirror     = 0
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3213439
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Database status                       = Up
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm02.pve.lvn.broadcom.net
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw1
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/mirror/gpseg3
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 16001
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Mirror
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Mirror
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Streaming
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Sent Location                     = C/F347DC58
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Flush Location                    = C/F347DC58
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Replay Location                   = C/F347DC58
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to flush    = 0
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to replay   = 0
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3200895
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Segment status                        = Up</pre></div>
+</details>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>Mirror Segment Status</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: All mirrors synchronized (mode=s) &nbsp;|&nbsp; Found: All mirrors in synchronized state
+  </span>
+</summary>
+<div class='det-body'><pre>20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Starting gpstate with args: -m
+20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a'
+20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-coordinator Greenplum Version: 'PostgreSQL 12.22 (Greenplum Database 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a) on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Jun 10 2025 07:31:20 Bhuvnesh C.'
+20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Obtaining Segment details from coordinator...
+20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--------------------------------------------------------------
+20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--Current GPDB mirror list and status
+20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--Type = Group
+20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--------------------------------------------------------------
+20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirror   Datadir               Port    Status    Data Status    
+20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   sdw2     /data/mirror/gpseg0   16000   Passive   Synchronized
+20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   sdw2     /data/mirror/gpseg1   16001   Passive   Synchronized
+20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   sdw1     /data/mirror/gpseg2   16000   Passive   Synchronized
+20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   sdw1     /data/mirror/gpseg3   16001   Passive   Synchronized
+20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--------------------------------------------------------------</pre></div>
+</details>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>Standby Coordinator Status</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: Standby configured and replicating &nbsp;|&nbsp; Found: Standby coordinator replicating (gpstate -f OK)
+  </span>
+</summary>
+<div class='det-body'><pre>20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Starting gpstate with args: -f
+20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a'
+20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-coordinator Greenplum Version: 'PostgreSQL 12.22 (Greenplum Database 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a) on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Jun 10 2025 07:31:20 Bhuvnesh C.'
+20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Obtaining Segment details from coordinator...
+20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Standby coordinator instance not configured
+20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--------------------------------------------------------------
+20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--pg_stat_replication
+20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--------------------------------------------------------------
+20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-No entries found.
+20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--------------------------------------------------------------</pre></div>
+</details>
+<details class='det-skip'>
+<summary>
+  &#8505; &nbsp;<b>Replication Lag</b> &nbsp;
+  <span class='pill pill-skip'>SUGGESTION</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: Standby lag &lt; 100 MB &nbsp;|&nbsp; Found: 0 standby connections detected
+  </span>
+</summary>
+<div class='det-body'><pre>No standby replication connections in pg_stat_replication.</pre></div>
+</details>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>Catalog Integrity Check</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: 0 catalog inconsistencies &nbsp;|&nbsp; Found: 0 catalog issues found
+  </span>
+</summary>
+<div class='det-body'><pre>Truncated batch size to number of primaries: 5
+
+Connected as user 'gpadmin' to database 'rcaf', port '5432', gpdb version '7.5'
+-------------------------------------------------------------------
+Batch size: 5
+Performing test 'unique_index_violation'
+Total runtime for test 'unique_index_violation': 0:00:02.54
+Performing test 'duplicate'
+Total runtime for test 'duplicate': 0:00:14.25
+Performing test 'missing_extraneous'
+Total runtime for test 'missing_extraneous': 0:00:00.66
+Performing test 'inconsistent'
+Total runtime for test 'inconsistent': 0:00:03.94
+Performing test 'foreign_key'
+Total runtime for test 'foreign_key': 0:00:01.38
+Performing test 'pgclass'
+Total runtime for test 'pgclass': 0:00:00.05
+Performing test 'namespace'
+Total runtime for test 'namespace': 0:00:00.03
+Performing test 'distribution_policy'
+Total runtime for test 'distribution_policy': 0:00:00.01
+Performing test 'dependency'
+Total runtime for test 'dependency': 0:00:00.19
+Performing test 'part_integrity'
+Total runtime for test 'part_integrity': 0:00:00.05
+Performing test 'orphaned_toast_tables'
+Total runtime for test 'orphaned_toast_tables': 0:00:00.08
+Performing test 'aoseg_table'
+Total runtime for test 'aoseg_table': 0:00:00.00
+Performing test 'ao_lastrownums'
+Total runtime for test 'ao_lastrownums': 0:00:00.00
+Performing test 'mix_distribution_policy'
+Total runtime for test 'mix_distribution_policy': 0:00:00.00
+
+SUMMARY REPORT: PASSED
+===================================================================
+Completed 14 test(s) on database 'rcaf' at 2026-06-15 18:35:12 with elapsed time 0:00:23
+Found no catalog issue</pre></div>
+</details>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>XID Wraparound Risk</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: XID age &lt; 500 M (warning) / &lt; 1.5 B (critical) &nbsp;|&nbsp; Found: Max XID age: 3244110 on DB: postgres
+  </span>
+</summary>
+<div class='det-body'><pre>  datname  | xid_age | xids_remaining | pct_toward_limit 
+-----------+---------+----------------+------------------
+ postgres  | 3244110 |     2096755890 |              0.2
+ template1 | 3244110 |     2096755890 |              0.2
+ template0 | 3244110 |     2096755890 |              0.2
+ rcaf      | 3244110 |     2096755890 |              0.2
+ gpperfmon | 3244110 |     2096755890 |              0.2
+ gp_wcc    | 3244110 |     2096755890 |              0.2
+(6 rows)</pre></div>
+</details>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>Connection Saturation</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: &lt; 80% of max_connections in use &nbsp;|&nbsp; Found: 10/250 connections used (4.0%)
+  </span>
+</summary>
+<div class='det-body'><pre> current_connections | max_connections | pct_used | active | idle | idle_in_txn 
+---------------------+-----------------+----------+--------+------+-------------
+                  10 |             250 |      4.0 |      1 |    3 |           0
+(1 row)</pre></div>
+</details>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>Long Running Queries</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: 0 queries running &gt; 1 hour; 0 idle-in-transaction &gt; 30 min &nbsp;|&nbsp; Found: 0 queries &gt;1 hour; 0 idle-in-transaction &gt;30 min
+  </span>
+</summary>
+<div class='det-body'><pre> pid | state | idle_txn_duration | last_query 
+-----+-------+-------------------+------------
+(0 rows)</pre></div>
+</details>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>Lock Waits</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: 0 ungranted locks &nbsp;|&nbsp; Found: 0 ungranted lock(s) at time of check
+  </span>
+</summary>
+<div class='det-body'><pre> blocked_pid | state | wait_duration | blocked_query | blocking_pid | blocking_query 
+-------------+-------+---------------+---------------+--------------+----------------
+(0 rows)</pre></div>
+</details>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>Disk Free</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: All nodes &gt;= 25% free disk &nbsp;|&nbsp; Found: Lowest free: 50% on sdw2
+  </span>
+</summary>
+<div class='det-body'><pre>[sdw2] df -h | grep -v tmpfs | grep -v overlay
+[sdw2] Filesystem                                   Size  Used Avail Use% Mounted on
+[sdw2] efivarfs                                     256K   57K  195K  23% /sys/firmware/efi/efivars
+[sdw2] /dev/mapper/rl_dhcp--10--159--237--231-root   70G   16G   55G  22% /
+[sdw2] /dev/sda2                                    960M  474M  487M  50% /boot
+[sdw2] /dev/mapper/rl_dhcp--10--159--237--231-home  497G  4.0G  493G   1% /home
+[sdw2] /dev/sda1                                    599M  7.1M  592M   2% /boot/efi
+[sdw1] df -h | grep -v tmpfs | grep -v overlay
+[sdw1] Filesystem                                   Size  Used Avail Use% Mounted on
+[sdw1] efivarfs                                     256K   57K  195K  23% /sys/firmware/efi/efivars
+[sdw1] /dev/mapper/rl_dhcp--10--159--237--228-root   70G   16G   55G  23% /
+[sdw1] /dev/sda2                                    960M  474M  487M  50% /boot
+[sdw1] /dev/mapper/rl_dhcp--10--159--237--228-home  497G  4.0G  493G   1% /home
+[sdw1] /dev/sda1                                    599M  7.1M  592M   2% /boot/efi</pre></div>
+</details>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>Tables Needing VACUUM</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: 0 tables with &gt; 10,000 dead tuples or never vacuumed &nbsp;|&nbsp; Found: 0 table(s) with &gt;10k dead tuples or never vacuumed
+  </span>
+</summary>
+<div class='det-body'><pre> schemaname | table_name | n_dead_tup | last_vacuum | last_autovacuum | time_since_vacuum 
+------------+------------+------------+-------------+-----------------+-------------------
+(0 rows)</pre></div>
+</details>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>CPU Usage</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: 30-day Avg &lt;= 80%, 30-day Peak &lt;= 95% &nbsp;|&nbsp; Found: 30-day Avg: 1%, 30-day Peak: 13%
+  </span>
+</summary>
+<div class='det-body'><pre>hostname,avg_total_cpu,max_total_cpu,avg_idle_cpu
+lvn-greenplum-vm03.pve.lvn.broadcom.net,1.1,12.6,98.8
+lvn-greenplum-vm02.pve.lvn.broadcom.net,1.0,11.9,98.9
+cdw,0.4,5.8,99.6
+(3 rows)</pre></div>
+</details>
+<details class='det-fail'>
+<summary>
+  &#9888; &nbsp;<b>Transparent Huge Pages</b> &nbsp;
+  <span class='pill pill-fail'>FAIL</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: THP = never or madvise on all hosts (NOT always) &nbsp;|&nbsp; Found: THP=always on hosts: sdw1 sdw2 
+  </span>
+</summary>
+<div class='det-body'><pre>sdw1: cat /sys/kernel/mm/transparent_hugepage/enabled [always] madvise never
+sdw2: cat /sys/kernel/mm/transparent_hugepage/enabled [always] madvise never</pre></div>
+</details>
+<details class='det-fail'>
+<summary>
+  &#9888; &nbsp;<b>Swap Usage</b> &nbsp;
+  <span class='pill pill-fail'>FAIL</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: 0 MB swap in use on all hosts &nbsp;|&nbsp; Found: Swap used on: sdw2(32211MB) sdw1(32211MB) 
+  </span>
+</summary>
+<div class='det-body'><pre>[sdw2] free -m | grep -i swap
+[sdw2] Swap:          32211          17       32194
+[sdw1] free -m | grep -i swap
+[sdw1] Swap:          32211           9       32202</pre></div>
+</details>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>File Descriptor Limits</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: ulimit -n &gt;= 524288 on all hosts &nbsp;|&nbsp; Found: Lowest: 99999999 on 
+  </span>
+</summary>
+<div class='det-body'><pre>sdw1: ulimit -n = ulimit -n 1024
+sdw2: ulimit -n = ulimit -n 1024</pre></div>
+</details>
+<details class='det-skip'>
+<summary>
+  &#8505; &nbsp;<b>MTU</b> &nbsp;
+  <span class='pill pill-skip'>SUGGESTION</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: All interfaces MTU &gt;= 9000 (Jumbo Frames) &nbsp;|&nbsp; Found: Lowest MTU: 1500 on sdw2
+  </span>
+</summary>
+<div class='det-body'><pre>[sdw2] ip link show | grep -i mtu
+[sdw2] 1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+[sdw2] 2: ens34: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+[sdw1] ip link show | grep -i mtu
+[sdw1] 1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+[sdw1] 2: ens34: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000</pre></div>
+</details>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>GPORCA Optimizer</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: optimizer = on (GPORCA enabled) &nbsp;|&nbsp; Found: Coordinator: on, Segment: on
+  </span>
+</summary>
+<div class='det-body'><pre>Values on all segments are consistent
+GUC              : optimizer
+Coordinator value: on
+Segment     value: on</pre></div>
+</details>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>Random Distribution Tables</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: 0 user tables with DISTRIBUTED RANDOMLY &nbsp;|&nbsp; Found: 0 table(s) with DISTRIBUTED RANDOMLY in user schemas
+  </span>
+</summary>
+<div class='det-body'><pre> schema | table_name | size 
+--------+------------+------
+(0 rows)</pre></div>
+</details>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>Stale Statistics</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: All tables &gt; 10k rows analyzed within last 7 days &nbsp;|&nbsp; Found: 0 table(s) &gt;10k rows with statistics older than 7 days
+  </span>
+</summary>
+<div class='det-body'><pre> schemaname | table_name | n_live_tup | n_dead_tup | last_analyze | last_autoanalyze | stats_age 
+------------+------------+------------+------------+--------------+------------------+-----------
+(0 rows)</pre></div>
+</details>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>Planner GUC Settings</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: optimizer=on, enable_nestloop=off, default_statistics_target&gt;=100, gp_interconnect_type=udpifc &nbsp;|&nbsp; Found: 0 of 7 settings differ from Greenplum recommendation
+  </span>
+</summary>
+<div class='det-body'><pre>
+=== enable_bitmapscan ===
+Expected: on  |  Found: on
+Values on all segments are consistent
+GUC              : enable_bitmapscan
+Coordinator value: on
+Segment     value: on
+
+=== gp_enable_multiphase_agg ===
+Expected: on  |  Found: on
+Values on all segments are consistent
+GUC              : gp_enable_multiphase_agg
+Coordinator value: on
+Segment     value: on
+
+=== optimizer ===
+Expected: on  |  Found: on
+Values on all segments are consistent
+GUC              : optimizer
+Coordinator value: on
+Segment     value: on
+
+=== enable_nestloop ===
+Expected: off  |  Found: off
+Values on all segments are consistent
+GUC              : enable_nestloop
+Coordinator value: off
+Segment     value: off
+
+=== gp_interconnect_type ===
+Expected: udpifc  |  Found: udpifc
+Values on all segments are consistent
+GUC              : gp_interconnect_type
+Coordinator value: udpifc
+Segment     value: udpifc
+
+=== optimizer_analyze_root_partition ===
+Expected: on  |  Found: on
+Values on all segments are consistent
+GUC              : optimizer_analyze_root_partition
+Coordinator value: on
+Segment     value: on
+
+=== enable_hashjoin ===
+Expected: on  |  Found: on
+Values on all segments are consistent
+GUC              : enable_hashjoin
+Coordinator value: on
+Segment     value: on
+
+=== default_statistics_target ===
+Expected: &gt;= 100  |  Found: 100
+Values on all segments are consistent
+GUC              : default_statistics_target
+Coordinator value: 100
+Segment     value: 100</pre></div>
+</details>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>Workfile Spill</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: 0 active queries spilling to disk &nbsp;|&nbsp; Found: 0 query/queries actively spilling to disk
+  </span>
+</summary>
+<div class='det-body'><pre> segid | size | numfiles 
+-------+------+----------
+    -1 |    0 |         
+     0 |    0 |         
+     1 |    0 |         
+     2 |    0 |         
+     3 |    0 |         
+(5 rows)</pre></div>
+</details>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>Resource Group and Memory Param</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: All GUC parameters readable and consistent &nbsp;|&nbsp; Found: Checked: 6, Failed: 0, Skipped: 1
+  </span>
+</summary>
+<div class='det-body'><pre>
+==================== gp_vmem_protect_limit ====================
+Values on all segments are consistent
+GUC              : gp_vmem_protect_limit
+Coordinator value: 8192
+Segment     value: 8192
+
+==================== statement_mem ====================
+Values on all segments are consistent
+GUC              : statement_mem
+Coordinator value: 125MB
+Segment     value: 125MB
+
+==================== max_statement_mem ====================
+Values on all segments are consistent
+GUC              : max_statement_mem
+Coordinator value: 2000MB
+Segment     value: 2000MB
+
+==================== shared_buffers ====================
+Values on all segments are consistent
+GUC              : shared_buffers
+Coordinator value: 125MB
+Segment     value: 125MB
+
+==================== gp_resgroup_memory_policy ====================
+Values on all segments are consistent
+GUC              : gp_resgroup_memory_policy
+Coordinator value: eager_free
+Segment     value: eager_free
+
+==================== gp_resource_manager ====================
+Values on all segments are consistent
+GUC              : gp_resource_manager
+Coordinator value: none
+Segment     value: none
+
+[SKIPPED — GP7] gp_instrument_shmem_size</pre></div>
+</details>
+<details class='det-fail'>
+<summary>
+  &#9888; &nbsp;<b>Trust Authentication</b> &nbsp;
+  <span class='pill pill-fail'>FAIL</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: 0 non-local trust auth rules in pg_hba.conf &nbsp;|&nbsp; Found: 6 non-local trust auth rule(s) in pg_hba.conf
+  </span>
+</summary>
+<div class='det-body'><pre>Trust authentication rule counts (rule content withheld — contains network topology):
+  Non-local trust rules : 6   &lt;- allows passwordless remote connections (should be 0)
+  Local trust rules     : 0   &lt;- local socket only (generally acceptable)
+
+To investigate: SELECT count(*), type FROM pg_hba_file_rules WHERE auth_method='trust' GROUP BY type;</pre></div>
+</details>
+<details class='det-pass'>
+<summary>
+  &#10003; &nbsp;<b>Privileged Roles</b> &nbsp;
+  <span class='pill pill-pass'>PASS</span>
+  &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
+    Benchmark: Superusers = gpadmin only; no login roles without passwords &nbsp;|&nbsp; Found: 2 superuser(s), 0 login role(s) with no password
+  </span>
+</summary>
+<div class='det-body'><pre>Role privilege summary (role names withheld to protect user account information):
+  Superuser roles              : 2   (benchmark: 1 — gpadmin only)
+  Login roles without password : 0   (benchmark: &lt;= 1)
+  Total login roles            : 3
+
+To investigate: SELECT count(*), rolsuper, rolcanlogin, (rolpassword IS NULL) no_pwd
+FROM pg_authid GROUP BY rolsuper, rolcanlogin, no_pwd ORDER BY rolsuper DESC;</pre></div>
+</details>
+</div></div>
+<a id='db-detail'></a>
+<div class='section'>
+<div class='section-header sh-orange'>&#128260; Per-Database Detail: Skew / Missing Stats / Bloat / Distribution / Extensions</div>
+<div class='section-body'>
+<p style='font-size:0.85em;color:#555;margin-bottom:12px;'>
+  Skew benchmark: skccoeff &le; 1.5 &nbsp;|&nbsp;
+  Bloat benchmark: &le;30% ratio on tables &gt;1600 pages &nbsp;|&nbsp;
+  Missing stats benchmark: 0 tables.
+</p>
+<details class='det-skip'>
+<summary>&#128260; &nbsp;<b>Database: rcaf</b> &nbsp;
+  <span style='font-size:0.82em;font-weight:normal;color:#555;'>Click to expand all diagnostic queries</span>
+</summary>
+<div class='det-body'><pre>
+--- Top 20 Tables by Skew Coefficient (benchmark: skccoeff <= 1.5) ---
+ skcoid | skcnamespace |                          skcrelname                           |         skccoeff         
+--------+--------------+---------------------------------------------------------------+--------------------------
+ 215433 | public       | satellite_json                                                | 88.043097763079502664000
+ 214634 | public       | satellite_actual_data                                         | 75.729379756332220249000
+  78936 | public       | gprabbitmq_satellite_staging_3f2db2ea366e3d28abce221b8ea1c16d |                        0
+ 197963 | public       | gprabbitmq_test_0ea2b81edea4431d23f40e5cb987e162              |                        0
+  75592 | public       | gprabbitmq_satellite_staging_1a169d3d202028cec9d1358eecd5bfed |                        0
+(5 rows)
+
+--- Top 20 Tables by Idle Fraction ---
+ sifoid | sifnamespace |                          sifrelname                           |      siffraction       
+--------+--------------+---------------------------------------------------------------+------------------------
+ 214634 | public       | satellite_actual_data                                         | 0.42691368078175895765
+ 215433 | public       | satellite_json                                                | 0.42691368078175895765
+  78936 | public       | gprabbitmq_satellite_staging_3f2db2ea366e3d28abce221b8ea1c16d |                      0
+ 197963 | public       | gprabbitmq_test_0ea2b81edea4431d23f40e5cb987e162              |                      0
+  75592 | public       | gprabbitmq_satellite_staging_1a169d3d202028cec9d1358eecd5bfed |                      0
+(5 rows)
+
+--- Tables with Missing Statistics (benchmark: 0 tables) ---
+ smischema |                           smitable                            | smisize | smicols | smirecs 
+-----------+---------------------------------------------------------------+---------+---------+---------
+ public    | gprabbitmq_test_0ea2b81edea4431d23f40e5cb987e162              | f       |       7 |       0
+ public    | gprabbitmq_satellite_staging_3f2db2ea366e3d28abce221b8ea1c16d | f       |       7 |       0
+ public    | gprabbitmq_satellite_staging_1a169d3d202028cec9d1358eecd5bfed | f       |       7 |       0
+(3 rows)
+
+--- Top 20 Tables by Bloat (benchmark: ratio <= 30% on pages > 1600) ---
+ schema_name | table_name | actual_pages | expected_pages | bloat_pct 
+-------------+------------+--------------+----------------+-----------
+(0 rows)
+
+--- Top 30 Tables by Size with Distribution Keys ---
+ERROR:  column dp.attrnums does not exist
+LINE 8: ...          WHERE a.attrelid=c.oid AND a.attnum=ANY(dp.attrnum...
+                                                             ^
+
+--- Installed Extensions ---
+     extname     | extversion | extrelocatable 
+-----------------+------------+----------------
+ dataflow        | 1.0        | t
+ gp_exttable_fdw | 1.0        | f
+ gp_toolkit      | 1.18       | f
+ gpss            | 1.0        | t
+ plpgsql         | 1.0        | f
+ pxf             | 3.0        | f
+(6 rows)
+
+--- Database Size ---
+ database_size 
+---------------
+ 121 MB
+(1 row)
+
+</pre></div></details>
+<details class='det-skip'>
+<summary>&#128260; &nbsp;<b>Database: gpperfmon</b> &nbsp;
+  <span style='font-size:0.82em;font-weight:normal;color:#555;'>Click to expand all diagnostic queries</span>
+</summary>
+<div class='det-body'><pre>
+--- Top 20 Tables by Skew Coefficient (benchmark: skccoeff <= 1.5) ---
+ERROR:  relation "gp_toolkit.gp_skew_coefficients" does not exist
+LINE 1: SELECT * FROM gp_toolkit.gp_skew_coefficients ORDER BY skcco...
+                      ^
+
+--- Top 20 Tables by Idle Fraction ---
+ERROR:  relation "gp_toolkit.gp_skew_idle_fractions" does not exist
+LINE 1: SELECT * FROM gp_toolkit.gp_skew_idle_fractions ORDER BY sif...
+                      ^
+
+--- Tables with Missing Statistics (benchmark: 0 tables) ---
+ERROR:  relation "gp_toolkit.gp_stats_missing" does not exist
+LINE 1: SELECT * FROM gp_toolkit.gp_stats_missing LIMIT 20;
+                      ^
+
+--- Top 20 Tables by Bloat (benchmark: ratio <= 30% on pages > 1600) ---
+ERROR:  relation "gp_toolkit.gp_bloat_diag" does not exist
+LINE 1: ...es)/nullif(bdiexppages,0))*100) AS bloat_pct FROM gp_toolkit...
+                                                             ^
+
+--- Top 30 Tables by Size with Distribution Keys ---
+ERROR:  column dp.attrnums does not exist
+LINE 8: ...          WHERE a.attrelid=c.oid AND a.attnum=ANY(dp.attrnum...
+                                                             ^
+
+--- Installed Extensions ---
+      extname      | extversion | extrelocatable 
+-------------------+------------+----------------
+ gp_exttable_fdw   | 1.0        | f
+ metrics_collector | 1.0        | f
+ plpgsql           | 1.0        | f
+ plpython3u        | 1.0        | f
+(4 rows)
+
+--- Database Size ---
+ database_size 
+---------------
+ 4961 MB
+(1 row)
+
+</pre></div></details>
+<details class='det-skip'>
+<summary>&#128260; &nbsp;<b>Database: gp_wcc</b> &nbsp;
+  <span style='font-size:0.82em;font-weight:normal;color:#555;'>Click to expand all diagnostic queries</span>
+</summary>
+<div class='det-body'><pre>
+--- Top 20 Tables by Skew Coefficient (benchmark: skccoeff <= 1.5) ---
+ERROR:  relation "gp_toolkit.gp_skew_coefficients" does not exist
+LINE 1: SELECT * FROM gp_toolkit.gp_skew_coefficients ORDER BY skcco...
+                      ^
+
+--- Top 20 Tables by Idle Fraction ---
+ERROR:  relation "gp_toolkit.gp_skew_idle_fractions" does not exist
+LINE 1: SELECT * FROM gp_toolkit.gp_skew_idle_fractions ORDER BY sif...
+                      ^
+
+--- Tables with Missing Statistics (benchmark: 0 tables) ---
+ERROR:  relation "gp_toolkit.gp_stats_missing" does not exist
+LINE 1: SELECT * FROM gp_toolkit.gp_stats_missing LIMIT 20;
+                      ^
+
+--- Top 20 Tables by Bloat (benchmark: ratio <= 30% on pages > 1600) ---
+ERROR:  relation "gp_toolkit.gp_bloat_diag" does not exist
+LINE 1: ...es)/nullif(bdiexppages,0))*100) AS bloat_pct FROM gp_toolkit...
+                                                             ^
+
+--- Top 30 Tables by Size with Distribution Keys ---
+ERROR:  column dp.attrnums does not exist
+LINE 8: ...          WHERE a.attrelid=c.oid AND a.attnum=ANY(dp.attrnum...
+                                                             ^
+
+--- Installed Extensions ---
+     extname     | extversion | extrelocatable 
+-----------------+------------+----------------
+ gp_exttable_fdw | 1.0        | f
+ plpgsql         | 1.0        | f
+(2 rows)
+
+--- Database Size ---
+ database_size 
+---------------
+ 107 MB
+(1 row)
+
+</pre></div></details>
+</div></div>
+<div class='section' style='background:#f8f9fa;'>
+<div class='section-body' style='padding:14px 20px;'>
+  <p><b>Report completed:</b> Mon Jun 15 06:35:49 PM EDT 2026</p>
+  <p><b>Overall result:</b>
+    <span class='pill pill-fail'>
+      3 FAIL(S) &nbsp;|&nbsp; 19 PASS &nbsp;|&nbsp; 2 SKIPPED / SUGGESTION
+    </span>
+  </p>
+  <p style='color:#922b21;margin-top:8px;'>
+    &#9888; <b>Inspect this report for any confidential information before sending it to the Tanzu account team.</b>
+  </p>
+</div>
+</div>
+</body></html>
