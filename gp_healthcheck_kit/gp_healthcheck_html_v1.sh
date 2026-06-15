@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # --------------------------------------------------
-# SCRIPT: gp_healthcheck_html.sh V 1.2
+# SCRIPT: gp_healthcheck_html.sh V 1.3
 # AUTHOR: Abhishek Jain (Tanzu Product Value Engineering)
-# DATE: April 2, 2026
+# DATE: May 29, 2026
 # DESCRIPTION: Greenplum Health Check HTML Report Generation Script.
 # --------------------------------------------------
 
@@ -348,18 +348,18 @@ for DB in $DBS; do
         continue
     fi
 
-    # Bloat Check
-    COLS=$(psql -d "$DB" -t -A -c "SELECT column_name FROM information_schema.columns WHERE table_schema='gp_toolkit' AND table_name='gp_bloat_diag';")
+    # Bloat Check - Dynamic execution focused on high-priority tables (>50MB / 1,600 pages) to align with GPCC baseline alerts
     BLOAT_THRESHOLD=30
-    if [[ "$COLS" == *"bloat_pct"* ]]; then
-        HIGH_BLOAT=$(psql -d "$DB" -t -A -c "SELECT COUNT(*) FROM gp_toolkit.gp_bloat_diag WHERE bloat_pct > $BLOAT_THRESHOLD;")
+    HIGH_BLOAT=$(psql -d "$DB" -t -A -c "SELECT COUNT(*) FROM gp_toolkit.gp_bloat_diag WHERE bdirelpages > 1600 AND bdirelpages > bdiexppages AND ((bdirelpages::float - bdiexppages) / nullif(bdiexppages, 0)) * 100 > $BLOAT_THRESHOLD;" 2>/dev/null)
+    
+    if [[ "$HIGH_BLOAT" =~ ^[0-9]+$ ]]; then
         if [[ "$HIGH_BLOAT" -gt 0 ]]; then
             BLOAT_STATUS="FAIL"
-            BLOAT_FAIL_REASON="Tables with bloat_pct > $BLOAT_THRESHOLD detected"
+            BLOAT_FAIL_REASON="Tables (>50MB) with bloat ratio > $BLOAT_THRESHOLD% detected"
         fi
     else
         BLOAT_STATUS="Failed"
-        BLOAT_FAIL_REASON="Missing bloat_pct column in gp_bloat_diag"
+        BLOAT_FAIL_REASON="Failed to run internal calculation metrics on gp_bloat_diag"
     fi
 
     # Skew Check
@@ -519,7 +519,7 @@ for DB in $DB_NAMES; do
     psql -d "$DB" -c "SELECT * FROM gp_toolkit.gp_skew_coefficients ORDER BY skccoeff DESC LIMIT 20;" >> $HTML 2>&1
     psql -d "$DB" -c "SELECT * FROM gp_toolkit.gp_skew_idle_fractions ORDER BY siffraction DESC LIMIT 20;" >> $HTML 2>&1
     psql -d "$DB" -c "SELECT * FROM gp_toolkit.gp_stats_missing LIMIT 20;" >> $HTML 2>&1
-    psql -d "$DB" -c "SELECT * FROM gp_toolkit.gp_bloat_diag LIMIT 20;" >> $HTML 2>&1
+    psql -d "$DB" -c "SELECT bdinspname AS schema_name, bdirelname AS table_name, bdirelpages AS actual_pages, bdiexppages AS expected_pages, round(((bdirelpages::float - bdiexppages) / nullif(bdiexppages, 0)) * 100) AS bloat_pct FROM gp_toolkit.gp_bloat_diag WHERE bdirelpages > 1600 ORDER BY (bdirelpages - bdiexppages) DESC LIMIT 20;" >> $HTML 2>&1
     psql -d "$DB" -c "SELECT extname, extversion, extrelocatable, extconfig, extcondition FROM pg_extension;" >> $HTML 2>&1
     echo "</pre></section>" >> $HTML
 done
