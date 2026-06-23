@@ -4,93 +4,93 @@
 
 ## Overview
 
-**gp_healthcheck_html_v3.sh** performs 24 automated health checks across a live Greenplum 6 or 7 cluster and produces a self-contained HTML report. The report includes a scorecard, a Failure Summary panel with actionable remediation steps, a full check-by-check summary table (benchmark vs actual), collapsible raw detail logs, per-database bloat/skew diagnostics, kernel parameter compliance, and an infrastructure overview card.
+**gp_healthcheck_html_v3.sh** performs 26 automated health checks across a live Greenplum 6 or 7 cluster and produces a self-contained HTML report. The report includes a scorecard, a Failure Summary panel with actionable remediation steps, a full check-by-check summary table (benchmark vs actual), collapsible raw detail logs, per-database bloat/skew diagnostics, kernel parameter compliance, and an infrastructure overview card.
 
 All checks are **read-only** — the script never modifies the customer environment.
 
 ---
 
-## Health Checks — 24 Checks across 7 Categories
+## Health Checks — 26 Checks across 7 Categories
 
 ### Cluster Health
 
-- **GP Segments Status:** Runs `gpstate -s` to verify all primary segments are up and in sync. Flags any segment showing as down or failed.
+- **GP Segments Status:** Verifies all primary segments are up and in sync. Flags any segment that is down or has failed over.
 
-- **Mirror Segment Status:** Runs `gpstate -m` to confirm all mirror segments are synchronized with their primaries. Detects out-of-sync or failed mirrors.
+- **Mirror Segment Status:** Confirms all mirror segments are synchronized with their primaries. Detects out-of-sync or failed mirrors that leave the cluster without redundancy.
 
-- **Standby Coordinator Status:** Runs `gpstate -f` to check whether a standby coordinator is configured and actively replicating. Reports as a suggestion if no standby is present.
+- **Standby Coordinator Status:** Checks whether a standby coordinator is configured and actively replicating. Reports as a suggestion if no standby is present — a single coordinator is a single point of failure.
 
-- **Replication Lag:** Queries `pg_stat_replication` for the maximum WAL/xlog lag between the primary coordinator and its standby. Fails if lag exceeds 100 MB.
+- **Replication Lag:** Measures the WAL replay lag between the primary coordinator and its standby. Excessive lag means the standby is behind and failover would lose recent transactions.
 
-- **Catalog Integrity Check:** Optionally runs `gpcheckcat -g -A` against all databases to detect catalog inconsistencies such as orphaned objects, foreign-key violations, and unique-index violations. Skipped if the user opts out at runtime (recommended to run off-peak).
+- **Catalog Integrity Check:** Optionally scans all databases for catalog inconsistencies such as orphaned objects and broken internal references. Skipped if the user opts out at runtime — recommended to run off-peak as it can be time-consuming on large clusters.
 
 ### Database Reliability
 
-- **XID Wraparound Risk:** Queries `pg_database` for the maximum transaction ID age across all databases. Warns above 500 million XIDs; critical above 1.5 billion (approaching forced shutdown).
+- **XID Wraparound Risk:** Checks how close each database is to transaction ID exhaustion. Left unaddressed, wraparound causes Greenplum to shut down the database to prevent data corruption.
 
-- **Connection Saturation:** Reports current vs maximum connections from `pg_stat_activity`. Fails if connection usage exceeds 80% of `max_connections`.
+- **Connection Saturation:** Reports how much of the available connection capacity is in use. A saturated connection pool causes new sessions to be rejected and applications to queue or fail.
 
-- **Long Running Queries:** Detects queries active for more than 1 hour and sessions idle-in-transaction for more than 30 minutes via `pg_stat_activity`.
+- **Long Running Queries:** Detects queries that have been running for more than one hour and sessions stuck idle inside an open transaction. Both conditions hold locks and consume resources unnecessarily.
 
-- **Lock Waits:** Detects ungranted locks in `pg_locks` and reports blocked/blocking query pairs with wait duration.
+- **Lock Waits:** Identifies sessions that are blocked waiting for a lock held by another session. Persistent lock waits indicate contention that can cascade into a cluster-wide slowdown.
 
 ### Storage & Maintenance
 
-- **Disk Free:** Uses `gpssh` to run `df -h` across all cluster hosts. Fails if any host has less than 25% free disk space on any mounted filesystem.
+- **Disk Free:** Checks available disk space on every host in the cluster. Any host below 25% free space risks segment crashes and data loss when Greenplum cannot write new data.
 
-- **Tables Needing VACUUM:** Queries `pg_stat_user_tables` for tables with more than 10,000 dead tuples or tables with live rows that have never been vacuumed.
+- **Tables Needing VACUUM:** Identifies tables with a large number of deleted or updated rows that have not been cleaned up. Accumulated dead rows bloat table size and degrade query performance over time.
+
+- **Data Bloat and Skew per Database:** Checks every database for two common storage problems. Bloat flags tables that are significantly larger than their actual data content — a sign that VACUUM or reorganization is overdue. Skew flags tables whose data is unevenly spread across segments, which forces some segments to do most of the work and limits the benefit of parallel processing.
 
 ### OS / Infrastructure
 
-- **CPU Usage:** Requires Greenplum Command Center (GPCC). Queries `gpmetrics.gpcc_system_history` for 30-day average and peak CPU utilisation per host. Skipped if GPCC is not installed.
+- **CPU Usage:** Requires Greenplum Command Center. Checks 30-day average and peak CPU utilisation per host. Consistently high CPU indicates workload saturation or runaway queries.
 
-- **Transparent Huge Pages:** Reads `/sys/kernel/mm/transparent_hugepage/enabled` on each host via `gpssh`. Fails if THP is set to `always` on any host (causes query latency spikes).
+- **Transparent Huge Pages:** Checks the Linux memory page setting on every host. When set to always, Transparent Huge Pages causes latency spikes and is explicitly unsupported by Greenplum.
 
-- **Swap Usage:** Runs `free -m` on all cluster hosts via `gpssh`. Fails if any host is using swap (indicates memory pressure).
+- **Swap Usage:** Checks whether any host is actively using swap space. Swap usage is a sign of memory pressure — Greenplum segment processes hitting swap will run orders of magnitude slower than expected.
 
-- **File Descriptor Limits:** Checks `ulimit -n` on each host via `gpssh`. Fails if any host has a file descriptor limit below 524,288.
+- **File Descriptor Limits:** Verifies the open file descriptor limit on every host. Greenplum opens many files simultaneously during query execution; too low a limit causes segment failures under normal load.
 
-- **MTU:** Reads `ip link show` MTU values across all cluster hosts. Reports a suggestion if any interface is below 9000 (Jumbo Frames not configured).
+- **MTU:** Checks the network interface MTU across all hosts. Jumbo Frames (MTU 9000) are required for efficient interconnect traffic between segments — a mismatch causes unnecessary packet fragmentation.
+
+- **Kernel Parameter Compliance:** Verifies 28 OS-level kernel settings on every host against Greenplum-recommended values. Kernel misconfiguration is one of the most common root causes of poor query performance and cluster instability, yet it is invisible from inside the database.
 
 ### Query Optimization
 
-- **GPORCA Optimizer:** Runs `gpconfig -s optimizer` to verify GPORCA is enabled on both the coordinator and all segments. GPORCA is required for optimal query planning on GP6+.
+- **GPORCA Optimizer:** Verifies GPORCA is enabled across the coordinator and all segments. GPORCA is Greenplum's cost-based optimizer and produces significantly better query plans than the legacy planner for analytical workloads.
 
-- **Random Distribution Tables:** Detects user tables that use `DISTRIBUTED RANDOMLY` (GP7: `policytype='r'`; GP6: `attrnums IS NULL`). Random distribution causes full data redistribution on every join.
+- **Random Distribution Tables:** Detects user tables that distribute rows randomly across segments. Random distribution forces a full data reshuffle on every join involving these tables, eliminating the performance benefit of co-located joins.
 
-- **Stale Statistics:** Queries `pg_stat_user_tables` for tables with more than 10,000 live rows whose statistics have not been updated in the last 7 days.
+- **Stale Statistics:** Identifies tables with a large number of live rows whose statistics have not been refreshed recently. The query planner relies on statistics to choose join strategies and scan methods — stale statistics lead to bad plans and slow queries.
 
-- **Planner GUC Settings:** Checks 8 planner-related GUC parameters against Greenplum-recommended values: `optimizer`, `optimizer_analyze_root_partition`, `gp_enable_multiphase_agg`, `enable_hashjoin`, `enable_nestloop`, `enable_bitmapscan`, `gp_interconnect_type`, and `default_statistics_target`.
+- **Planner GUC Settings:** Checks key query planner configuration parameters against Greenplum-recommended values. Incorrect planner settings can silently disable optimizations like hash joins, multi-phase aggregation, and partition pruning.
 
-- **Workfile Spill:** Queries `gp_toolkit.gp_workfile_usage_per_query` for queries currently spilling to disk. Skipped if the view is unavailable on the running GP version.
+- **Workfile Spill:** Detects queries currently spilling intermediate data to disk because they exceeded their memory allocation. Spilling queries run significantly slower and compete for disk I/O with other workloads.
 
 ### Configuration
 
-- **Resource Group and Memory Param:** Reads 7 memory and resource management GUC parameters via `gpconfig -s`: `gp_vmem_protect_limit`, `statement_mem`, `max_statement_mem`, `shared_buffers`, `gp_resgroup_memory_policy`, `gp_resource_manager`, and (GP6 only) `gp_instrument_shmem_size`.
+- **Resource Group and Memory Parameters:** Checks memory and resource management configuration parameters against recommended values. Misconfigured memory limits lead to out-of-memory errors under load or underutilisation of available RAM.
 
 ### Security
 
-- **Trust Authentication:** Checks `pg_hba.conf` for non-local `trust` authentication rules that allow passwordless remote connections. GP7 uses `pg_hba_file_rules`; GP6 reads the file directly. Only counts are reported — IP ranges and network topology are never included in the HTML report.
+- **Trust Authentication:** Scans the host-based authentication configuration for rules that allow remote connections without a password. Trust rules are appropriate only for local administrative access — remote trust rules are a significant security exposure.
 
-- **Privileged Roles:** Counts superuser roles, login roles without passwords, and total login roles via `pg_roles`/`pg_authid`. Fails if more than 2 superusers exist or more than 1 login role has no password set. Role names are never included in the HTML report — only aggregate counts.
+- **Privileged Roles:** Checks for excessive superuser accounts and login roles with no password set. Superuser proliferation and passwordless accounts are the most common access control gaps in Greenplum deployments.
 
 ---
 
-## Additional Diagnostics (not part of the 24 checks)
+## Additional Diagnostics
 
-- **Data Bloat / Skew per Database:** Summary table showing bloat ratio (via `gp_toolkit.gp_bloat_diag`) and skew coefficient (via `gp_toolkit.gp_skew_coefficients`) for every non-template database.
+- **Per-Database Detail Logs:** Collapsible sections per database showing top skewed tables, idle-fraction tables, missing statistics, top 20 bloated tables with wasted space, table distribution keys, installed extensions, and database size.
 
-- **Kernel Parameter Compliance:** Compares 28 OS-level `sysctl` kernel parameters on each host against the Greenplum-recommended baseline.
-
-- **Per-Database Detail Logs:** Collapsible sections per database showing top skewed tables, idle-fraction tables, missing statistics, bloat details, table distribution keys, installed extensions, and database size.
-
-- **Cluster Component Detail Logs:** Collapsible raw output for all 24 checks — the exact command output that determined each PASS/FAIL result.
+- **Cluster Component Detail Logs:** Collapsible raw output for all 26 checks — the exact command output that determined each PASS/FAIL result.
 
 ---
 
 ## Deployment Guide
 
-Run the script during off-peak hours. The optional `gpcheckcat` step can be time-consuming on large clusters with many databases.
+Run the script during off-peak hours. The optional catalog integrity check can be time-consuming on large clusters with many databases.
 
 ### Prerequisites
 
@@ -119,7 +119,7 @@ The script prompts for:
 1. Company name (used in report filename and title)
 2. Greenplum port (default: 5432)
 3. Hostfile path (auto-detected from common locations, or enter manually)
-4. Whether to run `gpcheckcat` (y/n)
+4. Whether to run the catalog integrity check (y/n)
 
 On completion it prints the path to the generated HTML report:
 

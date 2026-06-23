@@ -1428,10 +1428,16 @@ for DB in $DBS; do
         BLOAT_FINDING="gp_toolkit schema not found"; SKEW_FINDING="gp_toolkit schema not found"
     else
         HIGH_BLOAT=$(psql -p "$GP_PORT" -d "$DB" -t -A -c \
-            "SELECT count(*) FROM gp_toolkit.gp_bloat_diag
-             WHERE bdirelpages > ${BLOAT_PAGE_THRESHOLD}
-               AND bdirelpages > bdiexppages
-               AND ((bdirelpages::float - bdiexppages)/nullif(bdiexppages,0))*100 > ${BLOAT_THRESHOLD};" \
+            "SELECT count(*)
+             FROM gp_toolkit.gp_bloat_expected_pages e
+             JOIN pg_class c ON e.btdrelid = c.oid
+             JOIN pg_namespace n ON c.relnamespace = n.oid
+             WHERE e.btdrelpages > ${BLOAT_PAGE_THRESHOLD}
+               AND e.btdrelpages > e.btdexppages
+               AND ((e.btdrelpages::float - e.btdexppages) / nullif(e.btdexppages,0))*100 > ${BLOAT_THRESHOLD}
+               AND n.nspname NOT LIKE 'pg_temp_%'
+               AND n.nspname NOT LIKE 'pg_toast_temp_%'
+               AND n.nspname NOT IN ('pg_catalog','pg_toast','pg_bitmapindex','pg_aoseg','information_schema','gp_toolkit');" \
             2>/dev/null)
         if [[ "$HIGH_BLOAT" =~ ^[0-9]+$ && "$HIGH_BLOAT" -gt 0 ]]; then
             BLOAT_STATUS="FAIL"
@@ -1654,7 +1660,7 @@ for DB in $DB_NAMES; do
         "Top 20 Tables by Skew Coefficient (benchmark: skccoeff <= ${SKEW_THRESHOLD})|SELECT * FROM gp_toolkit.gp_skew_coefficients ORDER BY skccoeff DESC LIMIT 20;"
         "Top 20 Tables by Idle Fraction|SELECT * FROM gp_toolkit.gp_skew_idle_fractions ORDER BY siffraction DESC LIMIT 20;"
         "Tables with Missing Statistics (benchmark: 0 tables)|SELECT * FROM gp_toolkit.gp_stats_missing LIMIT 20;"
-        "Top 20 Tables by Bloat (benchmark: ratio <= ${BLOAT_THRESHOLD}% on pages > ${BLOAT_PAGE_THRESHOLD})|SELECT bdinspname AS schema_name, bdirelname AS table_name, bdirelpages AS actual_pages, bdiexppages AS expected_pages, round(((bdirelpages::float-bdiexppages)/nullif(bdiexppages,0))*100) AS bloat_pct FROM gp_toolkit.gp_bloat_diag WHERE bdirelpages > ${BLOAT_PAGE_THRESHOLD} ORDER BY (bdirelpages-bdiexppages) DESC LIMIT 20;"
+        "Top 20 Tables by Bloat (benchmark: ratio <= ${BLOAT_THRESHOLD}% on pages > ${BLOAT_PAGE_THRESHOLD})|SELECT n.nspname AS schema_name, c.relname AS table_name, e.btdrelpages AS actual_pages, e.btdexppages AS expected_pages, (e.btdrelpages - e.btdexppages) AS wasted_pages, ((e.btdrelpages - e.btdexppages) * 32) / 1024 AS wasted_mb, round(((e.btdrelpages::float - e.btdexppages) / nullif(e.btdexppages, 0)) * 100) AS bloat_pct FROM gp_toolkit.gp_bloat_expected_pages e JOIN pg_class c ON e.btdrelid = c.oid JOIN pg_namespace n ON c.relnamespace = n.oid WHERE e.btdrelpages > ${BLOAT_PAGE_THRESHOLD} AND e.btdrelpages > e.btdexppages AND ((e.btdrelpages::float - e.btdexppages) / nullif(e.btdexppages, 0)) * 100 > ${BLOAT_THRESHOLD} AND n.nspname NOT LIKE 'pg_temp_%' AND n.nspname NOT LIKE 'pg_toast_temp_%' AND n.nspname NOT IN ('pg_catalog','pg_toast','pg_bitmapindex','pg_aoseg','information_schema','gp_toolkit') ORDER BY wasted_pages DESC LIMIT 20;"
         "Top 30 Tables by Size with Distribution Keys|${DIST_KEY_QUERY}"
         "Installed Extensions|SELECT extname, extversion, extrelocatable FROM pg_extension ORDER BY extname;"
         "Database Size|SELECT pg_size_pretty(pg_database_size('${DB}')) AS database_size;"

@@ -181,11 +181,11 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
 
 <div class="page-header">
   <h1>Test &mdash; Greenplum Health Check Report</h1>
-  <div class="meta">Generated: Mon Jun 15 06:34:45 PM EDT 2026 &nbsp;|&nbsp; Report file: /home/gpadmin/Test_gp_healthcheck_report_20260615_183445.html</div>
+  <div class="meta">Generated: Tue Jun 23 08:47:37 AM EDT 2026 &nbsp;|&nbsp; Report file: /home/gpadmin/Test_gp_healthcheck_report_20260623_084737.html</div>
 </div>
 
 <div class="ver-strip">
-  <b>GP7</b> &nbsp;|&nbsp; PostgreSQL 12.22 (Greenplum Database 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a) on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Jun 10 2025 07:31:20 Bhuvnesh C. &nbsp;|&nbsp; Port: 5432
+  <b>GP6</b> &nbsp;|&nbsp; PostgreSQL 9.4.26 (Greenplum Database 6.31.0 build commit:c6c750a88aaa0907fcd9e3c08cbec057d70ef806) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Oct 20 2025 22:26:22 &nbsp;|&nbsp; Port: 5432
 </div>
 
 <div class="infra-overview">
@@ -193,7 +193,7 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
   <div class="infra-grid">
     <div class="infra-card">
       <span class="infra-label">Coordinator</span>
-      <span class="infra-val">cdw</span>
+      <span class="infra-val">mdw</span>
     </div>
     <div class="infra-card">
       <span class="infra-label">Standby Coordinator</span>
@@ -201,11 +201,11 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
     </div>
     <div class="infra-card">
       <span class="infra-label">Segment Hosts</span>
-      <span class="infra-val">2</span>
+      <span class="infra-val">1</span>
     </div>
     <div class="infra-card">
       <span class="infra-label">Primary Segments</span>
-      <span class="infra-val">4 (2/host)</span>
+      <span class="infra-val">2 (2/host)</span>
     </div>
     <div class="infra-card">
       <span class="infra-label">Mirrors</span>
@@ -213,11 +213,11 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
     </div>
     <div class="infra-card">
       <span class="infra-label">Databases</span>
-      <span class="infra-val">3</span>
+      <span class="infra-val">2</span>
     </div>
     <div class="infra-card">
       <span class="infra-label">Total Data Size</span>
-      <span class="infra-val">5186 MB</span>
+      <span class="infra-val">2700 MB</span>
     </div>
     <div class="infra-card">
       <span class="infra-label">Max Connections</span>
@@ -225,11 +225,11 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
     </div>
     <div class="infra-card">
       <span class="infra-label">Resource Manager</span>
-      <span class="infra-val">none</span>
+      <span class="infra-val">queue</span>
     </div>
     <div class="infra-card">
       <span class="infra-label">Cluster Started</span>
-      <span class="infra-val">2025-11-24 17:28:18</span>
+      <span class="infra-val">2025-11-21 16:41:23</span>
     </div>
     <div class="infra-card">
       <span class="infra-label">OS</span>
@@ -237,11 +237,11 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
     </div>
     <div class="infra-card">
       <span class="infra-label">Kernel</span>
-      <span class="infra-val">5.14.0-570.49.1.el9_6.x86_64</span>
+      <span class="infra-val">5.14.0-570.58.1.el9_6.x86_64</span>
     </div>
     <div class="infra-card">
       <span class="infra-label">Hosts in Hostfile</span>
-      <span class="infra-val">2</span>
+      <span class="infra-val">1</span>
     </div>
   </div>
 </div>
@@ -269,15 +269,15 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
 <tr class='r-fail'>
   <td class='col-name'><b>Transparent Huge Pages</b></td>
   <td class='col-prio'><span class='prio p-crit'>Critical</span></td>
-  <td class='col-actual'>THP=always on hosts: sdw1 sdw2 </td>
-  <td class='col-detail'>THP=[always] on: sdw1 sdw2 — causes latency spikes; set to never or madvise</td>
+  <td class='col-actual'>THP=always on hosts: mdw </td>
+  <td class='col-detail'>THP=[always] on: mdw — causes latency spikes; set to never or madvise</td>
   <td class='col-remedy fs-remedy'>&#128295;&nbsp;As root on each affected host: echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled. Persist via /etc/rc.d/rc.local or a tuned profile. Requires OS-level access.</td>
 </tr>
 <tr class='r-fail'>
   <td class='col-name'><b>Swap Usage</b></td>
   <td class='col-prio'><span class='prio p-high'>High</span></td>
-  <td class='col-actual'>Swap used on: sdw2(32211MB) sdw1(32211MB) </td>
-  <td class='col-detail'>Swap in use on: sdw2(32211MB) sdw1(32211MB) — memory pressure detected; queries will be degraded</td>
+  <td class='col-actual'>Swap used on: mdw(32215MB) </td>
+  <td class='col-detail'>Swap in use on: mdw(32215MB) — memory pressure detected; queries will be degraded</td>
   <td class='col-remedy fs-remedy'>&#128295;&nbsp;Reduce gp_vmem_protect_limit. Set vm.swappiness=10 in /etc/sysctl.conf and run 'sysctl -p'. Add RAM or reduce concurrent query workload. Requires OS-level access.</td>
 </tr>
 <tr class='r-fail'>
@@ -357,8 +357,8 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
   <td class='col-prio'><span class='prio p-crit'>Critical</span></td>
   <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
   <td class='col-bench'>XID age &lt; 500 M (warning) / &lt; 1.5 B (critical)</td>
-  <td class='col-actual'>Max XID age: 3244110 on DB: postgres</td>
-  <td class='col-detail'>Max XID age 3244110 is well within safe range</td>
+  <td class='col-actual'>Max XID age: 3269988 on DB: template1</td>
+  <td class='col-detail'>Max XID age 3269988 is well within safe range</td>
   <td class='col-remedy'>&mdash;</td>
 </tr>
 <tr class='r-pass'>
@@ -366,8 +366,8 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
   <td class='col-prio'><span class='prio p-high'>High</span></td>
   <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
   <td class='col-bench'>&lt; 80% of max_connections in use</td>
-  <td class='col-actual'>10/250 connections used (4.0%)</td>
-  <td class='col-detail'>10/250 connections (4.0%) within safe range</td>
+  <td class='col-actual'>5/250 connections used (2.0%)</td>
+  <td class='col-detail'>5/250 connections (2.0%) within safe range</td>
   <td class='col-remedy'>&mdash;</td>
 </tr>
 <tr class='r-pass'>
@@ -394,7 +394,7 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
   <td class='col-prio'><span class='prio p-high'>High</span></td>
   <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
   <td class='col-bench'>All nodes &gt;= 25% free disk</td>
-  <td class='col-actual'>Lowest free: 50% on sdw2</td>
+  <td class='col-actual'>Lowest free: 50% on mdw</td>
   <td class='col-detail'>All disks &gt;= 25% free</td>
   <td class='col-remedy'>&mdash;</td>
 </tr>
@@ -413,8 +413,8 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
   <td class='col-prio'><span class='prio p-high'>High</span></td>
   <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
   <td class='col-bench'>30-day Avg &lt;= 80%, 30-day Peak &lt;= 95%</td>
-  <td class='col-actual'>30-day Avg: 1%, 30-day Peak: 13%</td>
-  <td class='col-detail'>Avg=1%, Peak=13% — within limits</td>
+  <td class='col-actual'>30-day Avg: 1%, 30-day Peak: 15%</td>
+  <td class='col-detail'>Avg=1%, Peak=15% — within limits</td>
   <td class='col-remedy'>&mdash;</td>
 </tr>
 <tr class='r-fail'>
@@ -422,8 +422,8 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
   <td class='col-prio'><span class='prio p-crit'>Critical</span></td>
   <td class='col-status'><span class='pill pill-fail'>FAIL</span></td>
   <td class='col-bench'>THP = never or madvise on all hosts (NOT always)</td>
-  <td class='col-actual'>THP=always on hosts: sdw1 sdw2 </td>
-  <td class='col-detail'>THP=[always] on: sdw1 sdw2 — causes latency spikes; set to never or madvise</td>
+  <td class='col-actual'>THP=always on hosts: mdw </td>
+  <td class='col-detail'>THP=[always] on: mdw — causes latency spikes; set to never or madvise</td>
   <td class='col-remedy'>As root on each affected host: echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled. Persist via /etc/rc.d/rc.local or a tuned profile. Requires OS-level access.</td>
 </tr>
 <tr class='r-fail'>
@@ -431,8 +431,8 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
   <td class='col-prio'><span class='prio p-high'>High</span></td>
   <td class='col-status'><span class='pill pill-fail'>FAIL</span></td>
   <td class='col-bench'>0 MB swap in use on all hosts</td>
-  <td class='col-actual'>Swap used on: sdw2(32211MB) sdw1(32211MB) </td>
-  <td class='col-detail'>Swap in use on: sdw2(32211MB) sdw1(32211MB) — memory pressure detected; queries will be degraded</td>
+  <td class='col-actual'>Swap used on: mdw(32215MB) </td>
+  <td class='col-detail'>Swap in use on: mdw(32215MB) — memory pressure detected; queries will be degraded</td>
   <td class='col-remedy'>Reduce gp_vmem_protect_limit. Set vm.swappiness=10 in /etc/sysctl.conf and run 'sysctl -p'. Add RAM or reduce concurrent query workload. Requires OS-level access.</td>
 </tr>
 <tr class='r-pass'>
@@ -449,7 +449,7 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
   <td class='col-prio'><span class='prio p-med'>Medium</span></td>
   <td class='col-status'><span class='pill pill-skip'>SUGGESTION</span></td>
   <td class='col-bench'>All interfaces MTU &gt;= 9000 (Jumbo Frames)</td>
-  <td class='col-actual'>Lowest MTU: 1500 on sdw2</td>
+  <td class='col-actual'>Lowest MTU: 1500 on mdw</td>
   <td class='col-detail'>MTU &lt; 9000 on one or more nodes — Jumbo Frames recommended for best Greenplum network performance</td>
   <td class='col-remedy'>Set Jumbo Frames on all hosts (as root): 'ip link set &lt;iface&gt; mtu 9000'. Persist in /etc/sysconfig/network-scripts/ifcfg-&lt;iface&gt;. Coordinate with the network team.</td>
 </tr>
@@ -505,8 +505,8 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
   <td class='col-prio'><span class='prio p-high'>High</span></td>
   <td class='col-status'><span class='pill pill-pass'>PASS</span></td>
   <td class='col-bench'>All GUC parameters readable and consistent</td>
-  <td class='col-actual'>Checked: 6, Failed: 0, Skipped: 1</td>
-  <td class='col-detail'>All 6 GUC parameters readable and consistent</td>
+  <td class='col-actual'>Checked: 7, Failed: 0, Skipped: 0</td>
+  <td class='col-detail'>All 7 GUC parameters readable and consistent</td>
   <td class='col-remedy'>&mdash;</td>
 </tr>
 <tr class='cat-row'><td colspan='7'>Security</td></tr>
@@ -547,31 +547,22 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
 </thead>
 <tbody>
 <tr>
-  <td>16384</td><td>rcaf</td>
+  <td>16384</td><td>gpadmin</td>
+  <td class='tbl-pass'>PASS</td>
+  <td style='font-style:italic;color:#555;font-size:0.85em;'>&gt;1600 pages &amp; &gt;30% ratio</td>
+  <td>No significant bloat detected</td>
+  <td class='tbl-pass'>PASS</td>
+  <td style='font-style:italic;color:#555;font-size:0.85em;'>skccoeff &gt;1.5</td>
+  <td>No tables exceed skew threshold</td>
+</tr>
+<tr>
+  <td>16386</td><td>gpperfmon</td>
   <td class='tbl-pass'>PASS</td>
   <td style='font-style:italic;color:#555;font-size:0.85em;'>&gt;1600 pages &amp; &gt;30% ratio</td>
   <td>No significant bloat detected</td>
   <td class='tbl-fail'>FAIL</td>
   <td style='font-style:italic;color:#555;font-size:0.85em;'>skccoeff &gt;1.5</td>
-  <td>2 table(s) with skccoeff &gt;1.5 — data redistribution may help</td>
-</tr>
-<tr>
-  <td>16396</td><td>gpperfmon</td>
-  <td class='tbl-fail'>FAIL</td>
-  <td style='font-style:italic;color:#555;font-size:0.85em;'>&gt;1600 pages &amp; &gt;30% ratio</td>
-  <td>gp_toolkit schema not found</td>
-  <td class='tbl-fail'>FAIL</td>
-  <td style='font-style:italic;color:#555;font-size:0.85em;'>skccoeff &gt;1.5</td>
-  <td>gp_toolkit schema not found</td>
-</tr>
-<tr>
-  <td>1107832</td><td>gp_wcc</td>
-  <td class='tbl-fail'>FAIL</td>
-  <td style='font-style:italic;color:#555;font-size:0.85em;'>&gt;1600 pages &amp; &gt;30% ratio</td>
-  <td>gp_toolkit schema not found</td>
-  <td class='tbl-fail'>FAIL</td>
-  <td style='font-style:italic;color:#555;font-size:0.85em;'>skccoeff &gt;1.5</td>
-  <td>gp_toolkit schema not found</td>
+  <td>20 table(s) with skccoeff &gt;1.5 — data redistribution may help</td>
 </tr>
 </tbody></table></div></div>
 <a id='kernel'></a>
@@ -594,18 +585,13 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
 </thead>
 <tbody>
 <tr>
-  <td>sdw1</td><td class='k-pass'>PASS</td>
-  <td colspan='3' style='text-align:center;color:#1e8449;'>
-    All 28 kernel parameters match the Greenplum baseline</td>
-</tr>
-<tr>
-  <td>sdw2</td><td class='k-pass'>PASS</td>
+  <td>mdw</td><td class='k-pass'>PASS</td>
   <td colspan='3' style='text-align:center;color:#1e8449;'>
     All 28 kernel parameters match the Greenplum baseline</td>
 </tr>
 </tbody></table>
 <p style='font-size:0.85em;color:#555;margin-top:8px;'>
-  <b>2</b> host(s) fully compliant &nbsp;|&nbsp;
+  <b>1</b> host(s) fully compliant &nbsp;|&nbsp;
   <b>0</b> total kernel parameter mismatch(es) across cluster.
 </p>
 </div></div>
@@ -625,174 +611,100 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
     Benchmark: All primaries UP (status=u, mode=s or n) &nbsp;|&nbsp; Found: All primary segments reporting UP
   </span>
 </summary>
-<div class='det-body'><pre>20260615:18:34:45:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Starting gpstate with args: -s
-20260615:18:34:45:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a'
-20260615:18:34:45:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-coordinator Greenplum Version: 'PostgreSQL 12.22 (Greenplum Database 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a) on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Jun 10 2025 07:31:20 Bhuvnesh C.'
-20260615:18:34:45:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Obtaining Segment details from coordinator...
-20260615:18:34:45:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Gathering data from segments...
-..
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--Coordinator Configuration &amp; Status
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Coordinator host                  = cdw
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Coordinator postgres process ID   = 3520070
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Coordinator data directory        = /data/coordinator/gpseg-1
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Coordinator port                  = 5432
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Coordinator current role          = dispatch
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Greenplum initsystem version      = 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Greenplum current version         = PostgreSQL 12.22 (Greenplum Database 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a) on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Jun 10 2025 07:31:20 Bhuvnesh C.
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Postgres version                  = 12.22
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Coordinator standby               = No coordinator standby configured
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Segment Instance Status Report
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm02.pve.lvn.broadcom.net
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw1
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/primary/gpseg0
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 6000
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Primary
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Primary
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Synchronized
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current write location                = E/1B6A0A58
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes remaining to send to mirror     = 0
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3200783
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Database status                       = Up
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm03.pve.lvn.broadcom.net
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw2
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/mirror/gpseg0
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 16000
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Mirror
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Mirror
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Streaming
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Sent Location                     = E/1B6A0A58
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Flush Location                    = E/1B6A0A58
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Replay Location                   = E/1B6A0A58
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to flush    = 0
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to replay   = 0
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3213336
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Segment status                        = Up
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm02.pve.lvn.broadcom.net
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw1
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/primary/gpseg1
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 6001
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Primary
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Primary
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Synchronized
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current write location                = D/4F967B90
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes remaining to send to mirror     = 0
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3200811
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Database status                       = Up
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm03.pve.lvn.broadcom.net
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw2
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/mirror/gpseg1
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 16001
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Mirror
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Mirror
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Streaming
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Sent Location                     = D/4F967B90
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Flush Location                    = D/4F967B90
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Replay Location                   = D/4F967B90
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to flush    = 0
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to replay   = 0
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3213371
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Segment status                        = Up
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm03.pve.lvn.broadcom.net
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw2
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/primary/gpseg2
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 6000
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Primary
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Primary
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Synchronized
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current write location                = C/DC291F60
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes remaining to send to mirror     = 0
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3213429
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Database status                       = Up
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm02.pve.lvn.broadcom.net
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw1
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/mirror/gpseg2
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 16000
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Mirror
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Mirror
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Streaming
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Sent Location                     = C/DC291F60
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Flush Location                    = C/DC291F60
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Replay Location                   = C/DC291F60
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to flush    = 0
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to replay   = 0
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3200876
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Segment status                        = Up
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm03.pve.lvn.broadcom.net
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw2
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/primary/gpseg3
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 6001
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Primary
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Primary
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Synchronized
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current write location                = C/F347DC58
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes remaining to send to mirror     = 0
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3213439
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Database status                       = Up
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-----------------------------------------------------
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Segment Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Hostname                              = lvn-greenplum-vm02.pve.lvn.broadcom.net
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Address                               = sdw1
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Datadir                               = /data/mirror/gpseg3
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Port                                  = 16001
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirroring Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Current role                          = Mirror
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Preferred role                        = Mirror
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Mirror status                         = Streaming
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Replication Info
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Sent Location                     = C/F347DC58
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Flush Location                    = C/F347DC58
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      WAL Replay Location                   = C/F347DC58
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to flush    = 0
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Bytes received but remain to replay   = 0
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Status
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      PID                                   = 3200895
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Configuration reports status as       = Up
-20260615:18:34:47:597348 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-      Segment status                        = Up</pre></div>
+<div class='det-body'><pre>20260623:08:47:38:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Starting gpstate with args: -s
+20260623:08:47:38:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 6.31.0 build commit:c6c750a88aaa0907fcd9e3c08cbec057d70ef806'
+20260623:08:47:38:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Master Greenplum Version: 'PostgreSQL 9.4.26 (Greenplum Database 6.31.0 build commit:c6c750a88aaa0907fcd9e3c08cbec057d70ef806) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Oct 20 2025 22:26:22'
+20260623:08:47:38:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Obtaining Segment details from master...
+20260623:08:47:38:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Gathering data from segments...
+.
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-----------------------------------------------------
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--Master Configuration &amp; Status
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-----------------------------------------------------
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Master host                    = mdw
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Master postgres process ID     = 8985
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Master data directory          = /data/master/gpseg-1
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Master port                    = 5432
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Master current role            = dispatch
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Greenplum initsystem version   = 6.31.0 build commit:c6c750a88aaa0907fcd9e3c08cbec057d70ef806
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Greenplum current version      = PostgreSQL 9.4.26 (Greenplum Database 6.31.0 build commit:c6c750a88aaa0907fcd9e3c08cbec057d70ef806) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Oct 20 2025 22:26:22
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Postgres version               = 9.4.26
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Master standby                 = No master standby configured
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-----------------------------------------------------
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Segment Instance Status Report
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-----------------------------------------------------
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Segment Info
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Hostname                              = pve-gp6-lvn.lvn.broadcom.net
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Address                               = mdw
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Datadir                               = /data/primary/gpseg0
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Port                                  = 6000
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Mirroring Info
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Current role                          = Primary
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Preferred role                        = Primary
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Mirror status                         = Synchronized
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Replication Info
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Current write location                = 12/C25E1870
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Bytes remaining to send to mirror     = 0
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Status
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      PID                                   = 8962
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Database status                       = Up
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-----------------------------------------------------
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Segment Info
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Hostname                              = pve-gp6-lvn.lvn.broadcom.net
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Address                               = mdw
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Datadir                               = /data/mirror/gpseg0
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Port                                  = 7000
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Mirroring Info
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Current role                          = Mirror
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Preferred role                        = Mirror
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Mirror status                         = Streaming
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Replication Info
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      WAL Sent Location                     = 12/C25E1870
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      WAL Flush Location                    = 12/C25E1870
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      WAL Replay Location                   = 12/C25E1608
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Bytes received but remain to flush    = 0
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Bytes received but remain to replay   = 616
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Status
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      PID                                   = 9732
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Segment status                        = Up
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-----------------------------------------------------
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Segment Info
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Hostname                              = pve-gp6-lvn.lvn.broadcom.net
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Address                               = mdw
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Datadir                               = /data/primary/gpseg1
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Port                                  = 6001
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Mirroring Info
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Current role                          = Primary
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Preferred role                        = Primary
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Mirror status                         = Synchronized
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Replication Info
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Current write location                = 12/F613ECA8
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Bytes remaining to send to mirror     = 0
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Status
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      PID                                   = 8948
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Database status                       = Up
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-----------------------------------------------------
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Segment Info
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Hostname                              = pve-gp6-lvn.lvn.broadcom.net
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Address                               = mdw
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Datadir                               = /data/mirror/gpseg1
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Port                                  = 7001
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Mirroring Info
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Current role                          = Mirror
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Preferred role                        = Mirror
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Mirror status                         = Streaming
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Replication Info
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      WAL Sent Location                     = 12/F613ECA8
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      WAL Flush Location                    = 12/F613ECA8
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      WAL Replay Location                   = 12/F613EA40
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Bytes received but remain to flush    = 0
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Bytes received but remain to replay   = 616
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Status
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      PID                                   = 9731
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Configuration reports status as       = Up
+20260623:08:47:40:1758592 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-      Segment status                        = Up</pre></div>
 </details>
 <details class='det-pass'>
 <summary>
@@ -802,20 +714,18 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
     Benchmark: All mirrors synchronized (mode=s) &nbsp;|&nbsp; Found: All mirrors in synchronized state
   </span>
 </summary>
-<div class='det-body'><pre>20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Starting gpstate with args: -m
-20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a'
-20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-coordinator Greenplum Version: 'PostgreSQL 12.22 (Greenplum Database 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a) on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Jun 10 2025 07:31:20 Bhuvnesh C.'
-20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Obtaining Segment details from coordinator...
-20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--------------------------------------------------------------
-20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--Current GPDB mirror list and status
-20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--Type = Group
-20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--------------------------------------------------------------
-20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   Mirror   Datadir               Port    Status    Data Status    
-20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   sdw2     /data/mirror/gpseg0   16000   Passive   Synchronized
-20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   sdw2     /data/mirror/gpseg1   16001   Passive   Synchronized
-20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   sdw1     /data/mirror/gpseg2   16000   Passive   Synchronized
-20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-   sdw1     /data/mirror/gpseg3   16001   Passive   Synchronized
-20260615:18:34:48:597485 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--------------------------------------------------------------</pre></div>
+<div class='det-body'><pre>20260623:08:47:40:1759002 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Starting gpstate with args: -m
+20260623:08:47:40:1759002 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 6.31.0 build commit:c6c750a88aaa0907fcd9e3c08cbec057d70ef806'
+20260623:08:47:40:1759002 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Master Greenplum Version: 'PostgreSQL 9.4.26 (Greenplum Database 6.31.0 build commit:c6c750a88aaa0907fcd9e3c08cbec057d70ef806) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Oct 20 2025 22:26:22'
+20260623:08:47:40:1759002 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Obtaining Segment details from master...
+20260623:08:47:40:1759002 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--------------------------------------------------------------
+20260623:08:47:40:1759002 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--Current GPDB mirror list and status
+20260623:08:47:40:1759002 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--Type = Group
+20260623:08:47:40:1759002 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--------------------------------------------------------------
+20260623:08:47:40:1759002 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   Mirror   Datadir               Port   Status    Data Status    
+20260623:08:47:40:1759002 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   mdw      /data/mirror/gpseg0   7000   Passive   Synchronized
+20260623:08:47:40:1759002 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-   mdw      /data/mirror/gpseg1   7001   Passive   Synchronized
+20260623:08:47:40:1759002 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--------------------------------------------------------------</pre></div>
 </details>
 <details class='det-pass'>
 <summary>
@@ -825,16 +735,16 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
     Benchmark: Standby configured and replicating &nbsp;|&nbsp; Found: Standby coordinator replicating (gpstate -f OK)
   </span>
 </summary>
-<div class='det-body'><pre>20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Starting gpstate with args: -f
-20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a'
-20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-coordinator Greenplum Version: 'PostgreSQL 12.22 (Greenplum Database 7.5.1 build commit:9d50a8112ee52cab602caa48562c4045fc66c86a) on x86_64-pc-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Jun 10 2025 07:31:20 Bhuvnesh C.'
-20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Obtaining Segment details from coordinator...
-20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-Standby coordinator instance not configured
-20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--------------------------------------------------------------
-20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--pg_stat_replication
-20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--------------------------------------------------------------
-20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:-No entries found.
-20260615:18:34:48:597507 gpstate:lvn-greenplum-vm01:gpadmin-[INFO]:--------------------------------------------------------------</pre></div>
+<div class='det-body'><pre>20260623:08:47:40:1759028 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Starting gpstate with args: -f
+20260623:08:47:40:1759028 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-local Greenplum Version: 'postgres (Greenplum Database) 6.31.0 build commit:c6c750a88aaa0907fcd9e3c08cbec057d70ef806'
+20260623:08:47:40:1759028 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Master Greenplum Version: 'PostgreSQL 9.4.26 (Greenplum Database 6.31.0 build commit:c6c750a88aaa0907fcd9e3c08cbec057d70ef806) on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 11.5.0 20240719 (Red Hat 11.5.0-5), 64-bit compiled on Oct 20 2025 22:26:22'
+20260623:08:47:40:1759028 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Obtaining Segment details from master...
+20260623:08:47:40:1759028 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-Standby master instance not configured
+20260623:08:47:40:1759028 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--------------------------------------------------------------
+20260623:08:47:40:1759028 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--pg_stat_replication
+20260623:08:47:40:1759028 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--------------------------------------------------------------
+20260623:08:47:40:1759028 gpstate:pve-gp6-lvn:gpadmin-[INFO]:-No entries found.
+20260623:08:47:40:1759028 gpstate:pve-gp6-lvn:gpadmin-[INFO]:--------------------------------------------------------------</pre></div>
 </details>
 <details class='det-skip'>
 <summary>
@@ -854,43 +764,41 @@ pre { background: #f8f8f8; padding: 12px; overflow-x: auto; font-size: 0.82em;
     Benchmark: 0 catalog inconsistencies &nbsp;|&nbsp; Found: 0 catalog issues found
   </span>
 </summary>
-<div class='det-body'><pre>Truncated batch size to number of primaries: 5
+<div class='det-body'><pre>Truncated batch size to number of primaries: 3
 
-Connected as user 'gpadmin' to database 'rcaf', port '5432', gpdb version '7.5'
+Connected as user 'gpadmin' to database 'gpadmin', port '5432', gpdb version '6.31'
 -------------------------------------------------------------------
-Batch size: 5
+Batch size: 3
 Performing test 'unique_index_violation'
-Total runtime for test 'unique_index_violation': 0:00:02.54
+Total runtime for test 'unique_index_violation': 0:00:00.76
 Performing test 'duplicate'
-Total runtime for test 'duplicate': 0:00:14.25
+Total runtime for test 'duplicate': 0:00:01.36
 Performing test 'missing_extraneous'
-Total runtime for test 'missing_extraneous': 0:00:00.66
+Total runtime for test 'missing_extraneous': 0:00:00.42
 Performing test 'inconsistent'
-Total runtime for test 'inconsistent': 0:00:03.94
+Total runtime for test 'inconsistent': 0:00:01.96
 Performing test 'foreign_key'
-Total runtime for test 'foreign_key': 0:00:01.38
+Total runtime for test 'foreign_key': 0:00:01.15
 Performing test 'pgclass'
-Total runtime for test 'pgclass': 0:00:00.05
+Total runtime for test 'pgclass': 0:00:00.02
 Performing test 'namespace'
-Total runtime for test 'namespace': 0:00:00.03
+Total runtime for test 'namespace': 0:00:00.01
 Performing test 'distribution_policy'
-Total runtime for test 'distribution_policy': 0:00:00.01
+Total runtime for test 'distribution_policy': 0:00:00.00
 Performing test 'dependency'
-Total runtime for test 'dependency': 0:00:00.19
+Total runtime for test 'dependency': 0:00:00.32
 Performing test 'part_integrity'
-Total runtime for test 'part_integrity': 0:00:00.05
+Total runtime for test 'part_integrity': 0:00:00.04
+Performing test 'part_constraint'
+Total runtime for test 'part_constraint': 0:00:00.18
 Performing test 'orphaned_toast_tables'
 Total runtime for test 'orphaned_toast_tables': 0:00:00.08
 Performing test 'aoseg_table'
 Total runtime for test 'aoseg_table': 0:00:00.00
-Performing test 'ao_lastrownums'
-Total runtime for test 'ao_lastrownums': 0:00:00.00
-Performing test 'mix_distribution_policy'
-Total runtime for test 'mix_distribution_policy': 0:00:00.00
 
-SUMMARY REPORT: PASSED
+SUMMARY REPORT
 ===================================================================
-Completed 14 test(s) on database 'rcaf' at 2026-06-15 18:35:12 with elapsed time 0:00:23
+Completed 13 test(s) on database 'gpadmin' at 2026-06-23 08:47:48 with elapsed time 0:00:06
 Found no catalog issue</pre></div>
 </details>
 <details class='det-pass'>
@@ -898,30 +806,29 @@ Found no catalog issue</pre></div>
   &#10003; &nbsp;<b>XID Wraparound Risk</b> &nbsp;
   <span class='pill pill-pass'>PASS</span>
   &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
-    Benchmark: XID age &lt; 500 M (warning) / &lt; 1.5 B (critical) &nbsp;|&nbsp; Found: Max XID age: 3244110 on DB: postgres
+    Benchmark: XID age &lt; 500 M (warning) / &lt; 1.5 B (critical) &nbsp;|&nbsp; Found: Max XID age: 3269988 on DB: template1
   </span>
 </summary>
 <div class='det-body'><pre>  datname  | xid_age | xids_remaining | pct_toward_limit 
 -----------+---------+----------------+------------------
- postgres  | 3244110 |     2096755890 |              0.2
- template1 | 3244110 |     2096755890 |              0.2
- template0 | 3244110 |     2096755890 |              0.2
- rcaf      | 3244110 |     2096755890 |              0.2
- gpperfmon | 3244110 |     2096755890 |              0.2
- gp_wcc    | 3244110 |     2096755890 |              0.2
-(6 rows)</pre></div>
+ template1 | 3269988 |     2096730012 |              0.2
+ template0 | 3269988 |     2096730012 |              0.2
+ postgres  | 3269988 |     2096730012 |              0.2
+ gpadmin   | 3269988 |     2096730012 |              0.2
+ gpperfmon | 3269988 |     2096730012 |              0.2
+(5 rows)</pre></div>
 </details>
 <details class='det-pass'>
 <summary>
   &#10003; &nbsp;<b>Connection Saturation</b> &nbsp;
   <span class='pill pill-pass'>PASS</span>
   &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
-    Benchmark: &lt; 80% of max_connections in use &nbsp;|&nbsp; Found: 10/250 connections used (4.0%)
+    Benchmark: &lt; 80% of max_connections in use &nbsp;|&nbsp; Found: 5/250 connections used (2.0%)
   </span>
 </summary>
 <div class='det-body'><pre> current_connections | max_connections | pct_used | active | idle | idle_in_txn 
 ---------------------+-----------------+----------+--------+------+-------------
-                  10 |             250 |      4.0 |      1 |    3 |           0
+                   5 |             250 |      2.0 |      1 |    4 |           0
 (1 row)</pre></div>
 </details>
 <details class='det-pass'>
@@ -932,9 +839,9 @@ Found no catalog issue</pre></div>
     Benchmark: 0 queries running &gt; 1 hour; 0 idle-in-transaction &gt; 30 min &nbsp;|&nbsp; Found: 0 queries &gt;1 hour; 0 idle-in-transaction &gt;30 min
   </span>
 </summary>
-<div class='det-body'><pre> pid | state | idle_txn_duration | last_query 
------+-------+-------------------+------------
-(0 rows)</pre></div>
+<div class='det-body'><pre>ERROR:  column "wait_event_type" does not exist
+LINE 4:        wait_event_type, wait_event,
+               ^</pre></div>
 </details>
 <details class='det-pass'>
 <summary>
@@ -953,23 +860,16 @@ Found no catalog issue</pre></div>
   &#10003; &nbsp;<b>Disk Free</b> &nbsp;
   <span class='pill pill-pass'>PASS</span>
   &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
-    Benchmark: All nodes &gt;= 25% free disk &nbsp;|&nbsp; Found: Lowest free: 50% on sdw2
+    Benchmark: All nodes &gt;= 25% free disk &nbsp;|&nbsp; Found: Lowest free: 50% on mdw
   </span>
 </summary>
-<div class='det-body'><pre>[sdw2] df -h | grep -v tmpfs | grep -v overlay
-[sdw2] Filesystem                                   Size  Used Avail Use% Mounted on
-[sdw2] efivarfs                                     256K   57K  195K  23% /sys/firmware/efi/efivars
-[sdw2] /dev/mapper/rl_dhcp--10--159--237--231-root   70G   16G   55G  22% /
-[sdw2] /dev/sda2                                    960M  474M  487M  50% /boot
-[sdw2] /dev/mapper/rl_dhcp--10--159--237--231-home  497G  4.0G  493G   1% /home
-[sdw2] /dev/sda1                                    599M  7.1M  592M   2% /boot/efi
-[sdw1] df -h | grep -v tmpfs | grep -v overlay
-[sdw1] Filesystem                                   Size  Used Avail Use% Mounted on
-[sdw1] efivarfs                                     256K   57K  195K  23% /sys/firmware/efi/efivars
-[sdw1] /dev/mapper/rl_dhcp--10--159--237--228-root   70G   16G   55G  23% /
-[sdw1] /dev/sda2                                    960M  474M  487M  50% /boot
-[sdw1] /dev/mapper/rl_dhcp--10--159--237--228-home  497G  4.0G  493G   1% /home
-[sdw1] /dev/sda1                                    599M  7.1M  592M   2% /boot/efi</pre></div>
+<div class='det-body'><pre>[mdw] df -h | grep -v tmpfs | grep -v overlay
+[mdw] Filesystem           Size  Used Avail Use% Mounted on
+[mdw] efivarfs             256K   57K  195K  23% /sys/firmware/efi/efivars
+[mdw] /dev/mapper/rl-root  370G   37G  334G  10% /
+[mdw] /dev/sda2            960M  474M  487M  50% /boot
+[mdw] /dev/mapper/rl-home   97G  1.3G   96G   2% /home
+[mdw] /dev/sda1            599M  7.1M  592M   2% /boot/efi</pre></div>
 </details>
 <details class='det-pass'>
 <summary>
@@ -988,38 +888,33 @@ Found no catalog issue</pre></div>
   &#10003; &nbsp;<b>CPU Usage</b> &nbsp;
   <span class='pill pill-pass'>PASS</span>
   &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
-    Benchmark: 30-day Avg &lt;= 80%, 30-day Peak &lt;= 95% &nbsp;|&nbsp; Found: 30-day Avg: 1%, 30-day Peak: 13%
+    Benchmark: 30-day Avg &lt;= 80%, 30-day Peak &lt;= 95% &nbsp;|&nbsp; Found: 30-day Avg: 1%, 30-day Peak: 15%
   </span>
 </summary>
 <div class='det-body'><pre>hostname,avg_total_cpu,max_total_cpu,avg_idle_cpu
-lvn-greenplum-vm03.pve.lvn.broadcom.net,1.1,12.6,98.8
-lvn-greenplum-vm02.pve.lvn.broadcom.net,1.0,11.9,98.9
-cdw,0.4,5.8,99.6
-(3 rows)</pre></div>
+mdw,0.7,14.6,99.2
+(1 row)</pre></div>
 </details>
 <details class='det-fail'>
 <summary>
   &#9888; &nbsp;<b>Transparent Huge Pages</b> &nbsp;
   <span class='pill pill-fail'>FAIL</span>
   &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
-    Benchmark: THP = never or madvise on all hosts (NOT always) &nbsp;|&nbsp; Found: THP=always on hosts: sdw1 sdw2 
+    Benchmark: THP = never or madvise on all hosts (NOT always) &nbsp;|&nbsp; Found: THP=always on hosts: mdw 
   </span>
 </summary>
-<div class='det-body'><pre>sdw1: cat /sys/kernel/mm/transparent_hugepage/enabled [always] madvise never
-sdw2: cat /sys/kernel/mm/transparent_hugepage/enabled [always] madvise never</pre></div>
+<div class='det-body'><pre>mdw: cat /sys/kernel/mm/transparent_hugepage/enabled [always] madvise never</pre></div>
 </details>
 <details class='det-fail'>
 <summary>
   &#9888; &nbsp;<b>Swap Usage</b> &nbsp;
   <span class='pill pill-fail'>FAIL</span>
   &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
-    Benchmark: 0 MB swap in use on all hosts &nbsp;|&nbsp; Found: Swap used on: sdw2(32211MB) sdw1(32211MB) 
+    Benchmark: 0 MB swap in use on all hosts &nbsp;|&nbsp; Found: Swap used on: mdw(32215MB) 
   </span>
 </summary>
-<div class='det-body'><pre>[sdw2] free -m | grep -i swap
-[sdw2] Swap:          32211          17       32194
-[sdw1] free -m | grep -i swap
-[sdw1] Swap:          32211           9       32202</pre></div>
+<div class='det-body'><pre>[mdw] free -m | grep -i swap
+[mdw] Swap:          32215          15       32200</pre></div>
 </details>
 <details class='det-pass'>
 <summary>
@@ -1029,23 +924,19 @@ sdw2: cat /sys/kernel/mm/transparent_hugepage/enabled [always] madvise never</pr
     Benchmark: ulimit -n &gt;= 524288 on all hosts &nbsp;|&nbsp; Found: Lowest: 99999999 on 
   </span>
 </summary>
-<div class='det-body'><pre>sdw1: ulimit -n = ulimit -n 1024
-sdw2: ulimit -n = ulimit -n 1024</pre></div>
+<div class='det-body'><pre>mdw: ulimit -n = ulimit -n 1024</pre></div>
 </details>
 <details class='det-skip'>
 <summary>
   &#8505; &nbsp;<b>MTU</b> &nbsp;
   <span class='pill pill-skip'>SUGGESTION</span>
   &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
-    Benchmark: All interfaces MTU &gt;= 9000 (Jumbo Frames) &nbsp;|&nbsp; Found: Lowest MTU: 1500 on sdw2
+    Benchmark: All interfaces MTU &gt;= 9000 (Jumbo Frames) &nbsp;|&nbsp; Found: Lowest MTU: 1500 on mdw
   </span>
 </summary>
-<div class='det-body'><pre>[sdw2] ip link show | grep -i mtu
-[sdw2] 1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
-[sdw2] 2: ens34: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
-[sdw1] ip link show | grep -i mtu
-[sdw1] 1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
-[sdw1] 2: ens34: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000</pre></div>
+<div class='det-body'><pre>[mdw] ip link show | grep -i mtu
+[mdw] 1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+[mdw] 2: ens33: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000</pre></div>
 </details>
 <details class='det-pass'>
 <summary>
@@ -1056,9 +947,9 @@ sdw2: ulimit -n = ulimit -n 1024</pre></div>
   </span>
 </summary>
 <div class='det-body'><pre>Values on all segments are consistent
-GUC              : optimizer
-Coordinator value: on
-Segment     value: on</pre></div>
+GUC          : optimizer
+Master  value: on
+Segment value: on</pre></div>
 </details>
 <details class='det-pass'>
 <summary>
@@ -1068,9 +959,9 @@ Segment     value: on</pre></div>
     Benchmark: 0 user tables with DISTRIBUTED RANDOMLY &nbsp;|&nbsp; Found: 0 table(s) with DISTRIBUTED RANDOMLY in user schemas
   </span>
 </summary>
-<div class='det-body'><pre> schema | table_name | size 
---------+------------+------
-(0 rows)</pre></div>
+<div class='det-body'><pre>ERROR:  column p.attrnums does not exist
+LINE 8: ...                     WHERE p.localoid = c.oid AND p.attrnums...
+                                                             ^</pre></div>
 </details>
 <details class='det-pass'>
 <summary>
@@ -1096,58 +987,58 @@ Segment     value: on</pre></div>
 === enable_bitmapscan ===
 Expected: on  |  Found: on
 Values on all segments are consistent
-GUC              : enable_bitmapscan
-Coordinator value: on
-Segment     value: on
+GUC          : enable_bitmapscan
+Master  value: on
+Segment value: on
 
 === gp_enable_multiphase_agg ===
 Expected: on  |  Found: on
 Values on all segments are consistent
-GUC              : gp_enable_multiphase_agg
-Coordinator value: on
-Segment     value: on
+GUC          : gp_enable_multiphase_agg
+Master  value: on
+Segment value: on
 
 === optimizer ===
 Expected: on  |  Found: on
 Values on all segments are consistent
-GUC              : optimizer
-Coordinator value: on
-Segment     value: on
+GUC          : optimizer
+Master  value: on
+Segment value: on
 
 === enable_nestloop ===
 Expected: off  |  Found: off
 Values on all segments are consistent
-GUC              : enable_nestloop
-Coordinator value: off
-Segment     value: off
+GUC          : enable_nestloop
+Master  value: off
+Segment value: off
 
 === gp_interconnect_type ===
 Expected: udpifc  |  Found: udpifc
 Values on all segments are consistent
-GUC              : gp_interconnect_type
-Coordinator value: udpifc
-Segment     value: udpifc
+GUC          : gp_interconnect_type
+Master  value: udpifc
+Segment value: udpifc
 
 === optimizer_analyze_root_partition ===
 Expected: on  |  Found: on
 Values on all segments are consistent
-GUC              : optimizer_analyze_root_partition
-Coordinator value: on
-Segment     value: on
+GUC          : optimizer_analyze_root_partition
+Master  value: on
+Segment value: on
 
 === enable_hashjoin ===
 Expected: on  |  Found: on
 Values on all segments are consistent
-GUC              : enable_hashjoin
-Coordinator value: on
-Segment     value: on
+GUC          : enable_hashjoin
+Master  value: on
+Segment value: on
 
 === default_statistics_target ===
 Expected: &gt;= 100  |  Found: 100
 Values on all segments are consistent
-GUC              : default_statistics_target
-Coordinator value: 100
-Segment     value: 100</pre></div>
+GUC          : default_statistics_target
+Master  value: 100
+Segment value: 100</pre></div>
 </details>
 <details class='det-pass'>
 <summary>
@@ -1159,59 +1050,61 @@ Segment     value: 100</pre></div>
 </summary>
 <div class='det-body'><pre> segid | size | numfiles 
 -------+------+----------
-    -1 |    0 |         
-     0 |    0 |         
      1 |    0 |         
-     2 |    0 |         
-     3 |    0 |         
-(5 rows)</pre></div>
+     0 |    0 |         
+    -1 |    0 |         
+(3 rows)</pre></div>
 </details>
 <details class='det-pass'>
 <summary>
   &#10003; &nbsp;<b>Resource Group and Memory Param</b> &nbsp;
   <span class='pill pill-pass'>PASS</span>
   &nbsp;<span style='font-size:0.82em;font-weight:normal;color:#555;'>
-    Benchmark: All GUC parameters readable and consistent &nbsp;|&nbsp; Found: Checked: 6, Failed: 0, Skipped: 1
+    Benchmark: All GUC parameters readable and consistent &nbsp;|&nbsp; Found: Checked: 7, Failed: 0, Skipped: 0
   </span>
 </summary>
 <div class='det-body'><pre>
 ==================== gp_vmem_protect_limit ====================
 Values on all segments are consistent
-GUC              : gp_vmem_protect_limit
-Coordinator value: 8192
-Segment     value: 8192
+GUC          : gp_vmem_protect_limit
+Master  value: 8192
+Segment value: 8192
 
 ==================== statement_mem ====================
 Values on all segments are consistent
-GUC              : statement_mem
-Coordinator value: 125MB
-Segment     value: 125MB
+GUC          : statement_mem
+Master  value: 125MB
+Segment value: 125MB
 
 ==================== max_statement_mem ====================
 Values on all segments are consistent
-GUC              : max_statement_mem
-Coordinator value: 2000MB
-Segment     value: 2000MB
+GUC          : max_statement_mem
+Master  value: 2000MB
+Segment value: 2000MB
 
 ==================== shared_buffers ====================
 Values on all segments are consistent
-GUC              : shared_buffers
-Coordinator value: 125MB
-Segment     value: 125MB
+GUC          : shared_buffers
+Master  value: 125MB
+Segment value: 125MB
 
 ==================== gp_resgroup_memory_policy ====================
 Values on all segments are consistent
-GUC              : gp_resgroup_memory_policy
-Coordinator value: eager_free
-Segment     value: eager_free
+GUC          : gp_resgroup_memory_policy
+Master  value: eager_free
+Segment value: eager_free
 
 ==================== gp_resource_manager ====================
 Values on all segments are consistent
-GUC              : gp_resource_manager
-Coordinator value: none
-Segment     value: none
+GUC          : gp_resource_manager
+Master  value: queue
+Segment value: queue
 
-[SKIPPED — GP7] gp_instrument_shmem_size</pre></div>
+==================== gp_instrument_shmem_size ====================
+Values on all segments are consistent
+GUC          : gp_instrument_shmem_size
+Master  value: 5MB
+Segment value: 5MB</pre></div>
 </details>
 <details class='det-fail'>
 <summary>
@@ -1223,9 +1116,10 @@ Segment     value: none
 </summary>
 <div class='det-body'><pre>Trust authentication rule counts (rule content withheld — contains network topology):
   Non-local trust rules : 6   &lt;- allows passwordless remote connections (should be 0)
-  Local trust rules     : 0   &lt;- local socket only (generally acceptable)
+  Local trust rules     : 0
+0   &lt;- local socket only (generally acceptable)
 
-To investigate: SELECT count(*), type FROM pg_hba_file_rules WHERE auth_method='trust' GROUP BY type;</pre></div>
+To investigate, review: /data/master/gpseg-1/pg_hba.conf</pre></div>
 </details>
 <details class='det-pass'>
 <summary>
@@ -1238,7 +1132,7 @@ To investigate: SELECT count(*), type FROM pg_hba_file_rules WHERE auth_method='
 <div class='det-body'><pre>Role privilege summary (role names withheld to protect user account information):
   Superuser roles              : 2   (benchmark: 1 — gpadmin only)
   Login roles without password : 0   (benchmark: &lt;= 1)
-  Total login roles            : 3
+  Total login roles            : 2
 
 To investigate: SELECT count(*), rolsuper, rolcanlogin, (rolpassword IS NULL) no_pwd
 FROM pg_authid GROUP BY rolsuper, rolcanlogin, no_pwd ORDER BY rolsuper DESC;</pre></div>
@@ -1254,63 +1148,45 @@ FROM pg_authid GROUP BY rolsuper, rolcanlogin, no_pwd ORDER BY rolsuper DESC;</p
   Missing stats benchmark: 0 tables.
 </p>
 <details class='det-skip'>
-<summary>&#128260; &nbsp;<b>Database: rcaf</b> &nbsp;
+<summary>&#128260; &nbsp;<b>Database: gpadmin</b> &nbsp;
   <span style='font-size:0.82em;font-weight:normal;color:#555;'>Click to expand all diagnostic queries</span>
 </summary>
 <div class='det-body'><pre>
 --- Top 20 Tables by Skew Coefficient (benchmark: skccoeff <= 1.5) ---
- skcoid | skcnamespace |                          skcrelname                           |         skccoeff         
---------+--------------+---------------------------------------------------------------+--------------------------
- 215433 | public       | satellite_json                                                | 88.043097763079502664000
- 214634 | public       | satellite_actual_data                                         | 75.729379756332220249000
-  78936 | public       | gprabbitmq_satellite_staging_3f2db2ea366e3d28abce221b8ea1c16d |                        0
- 197963 | public       | gprabbitmq_test_0ea2b81edea4431d23f40e5cb987e162              |                        0
-  75592 | public       | gprabbitmq_satellite_staging_1a169d3d202028cec9d1358eecd5bfed |                        0
-(5 rows)
+ skcoid | skcnamespace | skcrelname | skccoeff 
+--------+--------------+------------+----------
+(0 rows)
 
 --- Top 20 Tables by Idle Fraction ---
- sifoid | sifnamespace |                          sifrelname                           |      siffraction       
---------+--------------+---------------------------------------------------------------+------------------------
- 214634 | public       | satellite_actual_data                                         | 0.42691368078175895765
- 215433 | public       | satellite_json                                                | 0.42691368078175895765
-  78936 | public       | gprabbitmq_satellite_staging_3f2db2ea366e3d28abce221b8ea1c16d |                      0
- 197963 | public       | gprabbitmq_test_0ea2b81edea4431d23f40e5cb987e162              |                      0
-  75592 | public       | gprabbitmq_satellite_staging_1a169d3d202028cec9d1358eecd5bfed |                      0
-(5 rows)
+ sifoid | sifnamespace | sifrelname | siffraction 
+--------+--------------+------------+-------------
+(0 rows)
 
 --- Tables with Missing Statistics (benchmark: 0 tables) ---
- smischema |                           smitable                            | smisize | smicols | smirecs 
------------+---------------------------------------------------------------+---------+---------+---------
- public    | gprabbitmq_test_0ea2b81edea4431d23f40e5cb987e162              | f       |       7 |       0
- public    | gprabbitmq_satellite_staging_3f2db2ea366e3d28abce221b8ea1c16d | f       |       7 |       0
- public    | gprabbitmq_satellite_staging_1a169d3d202028cec9d1358eecd5bfed | f       |       7 |       0
-(3 rows)
+ smischema | smitable | smisize | smicols | smirecs 
+-----------+----------+---------+---------+---------
+(0 rows)
 
 --- Top 20 Tables by Bloat (benchmark: ratio <= 30% on pages > 1600) ---
- schema_name | table_name | actual_pages | expected_pages | bloat_pct 
--------------+------------+--------------+----------------+-----------
+ schema_name | table_name | actual_pages | expected_pages | wasted_pages | wasted_mb | bloat_pct 
+-------------+------------+--------------+----------------+--------------+-----------+-----------
 (0 rows)
 
 --- Top 30 Tables by Size with Distribution Keys ---
 ERROR:  column dp.attrnums does not exist
-LINE 8: ...          WHERE a.attrelid=c.oid AND a.attnum=ANY(dp.attrnum...
-                                                             ^
+LINE 4:                WHEN dp.attrnums IS NULL THEN 'RANDOM (no key...
+                            ^
 
 --- Installed Extensions ---
-     extname     | extversion | extrelocatable 
------------------+------------+----------------
- dataflow        | 1.0        | t
- gp_exttable_fdw | 1.0        | f
- gp_toolkit      | 1.18       | f
- gpss            | 1.0        | t
- plpgsql         | 1.0        | f
- pxf             | 3.0        | f
-(6 rows)
+ extname | extversion | extrelocatable 
+---------+------------+----------------
+ plpgsql | 1.0        | f
+(1 row)
 
 --- Database Size ---
  database_size 
 ---------------
- 121 MB
+ 242 MB
 (1 row)
 
 </pre></div></details>
@@ -1320,94 +1196,109 @@ LINE 8: ...          WHERE a.attrelid=c.oid AND a.attnum=ANY(dp.attrnum...
 </summary>
 <div class='det-body'><pre>
 --- Top 20 Tables by Skew Coefficient (benchmark: skccoeff <= 1.5) ---
-ERROR:  relation "gp_toolkit.gp_skew_coefficients" does not exist
-LINE 1: SELECT * FROM gp_toolkit.gp_skew_coefficients ORDER BY skcco...
-                      ^
+ skcoid | skcnamespace |                skcrelname                |         skccoeff          
+--------+--------------+------------------------------------------+---------------------------
+  16868 | gpmetrics    | _gpcc_pg_log_meta                        | 141.421356237309504880000
+  16408 | gpmetrics    | gpcc_canary_queries                      | 141.421356237309504880000
+ 336457 | gpmetrics    | gpcc_pg_log_history_1_prt_t1769985346    | 141.421356237309500000000
+  16843 | gpmetrics    | gpcc_pg_log_history_1_prt_1              |  36.664796061524686667000
+ 913012 | gpmetrics    | gpcc_plannode_history_1_prt_r298686688   |  18.218546168041400454000
+ 967487 | gpmetrics    | gpcc_queries_history_1_prt_r2063667896   |   9.851824816531673371000
+ 521328 | gpmetrics    | gpcc_plannode_history_1_prt_r2027291951  |   8.402482278254578580000
+ 741998 | gpmetrics    | gpcc_pg_log_history_1_prt_t1777675018    |   7.856742013183861111000
+  24754 | gpmetrics    | gpcc_plannode_history_1_prt_r1659906076  |   6.344652904331258116000
+ 912979 | gpmetrics    | gpcc_queries_history_1_prt_r2103869700   |   3.739507015890395553000
+  16992 | gpmetrics    | gpcc_table_info_history_1_prt_1          |   3.217300883737011487000
+  70033 | gpmetrics    | gpcc_queries_history_1_prt_r223528022    |   2.881250042186271749000
+ 967520 | gpmetrics    | gpcc_plannode_history_1_prt_r1227687911  |   2.865698789990228742000
+ 562127 | gpmetrics    | gpcc_plannode_history_1_prt_r1832251756  |   2.377825424476826246000
+  16967 | gpmetrics    | gpcc_table_info                          |   2.228457734648513406000
+ 930864 | gpmetrics    | gpcc_plannode_history_1_prt_r903766896   |   1.973709714986696506000
+ 521295 | gpmetrics    | gpcc_queries_history_1_prt_r1334202933   |   1.836640990094928638000
+ 201112 | gpmetrics    | gpcc_table_info_history_1_prt_r10755835  |   1.608148629204548316000
+ 458680 | gpmetrics    | gpcc_ps_history_1_prt_r1780324922        |   1.571348402636772222000
+  64171 | gpmetrics    | gpcc_table_info_history_1_prt_r805802478 |   1.561512970620830738000
+(20 rows)
 
 --- Top 20 Tables by Idle Fraction ---
-ERROR:  relation "gp_toolkit.gp_skew_idle_fractions" does not exist
-LINE 1: SELECT * FROM gp_toolkit.gp_skew_idle_fractions ORDER BY sif...
-                      ^
+ sifoid | sifnamespace |                sifrelname                |      siffraction       
+--------+--------------+------------------------------------------+------------------------
+  16408 | gpmetrics    | gpcc_canary_queries                      | 0.50000000000000000000
+ 336457 | gpmetrics    | gpcc_pg_log_history_1_prt_t1769985346    | 0.50000000000000000000
+  16868 | gpmetrics    | _gpcc_pg_log_meta                        | 0.50000000000000000000
+  16843 | gpmetrics    | gpcc_pg_log_history_1_prt_1              | 0.20588235294117647059
+ 913012 | gpmetrics    | gpcc_plannode_history_1_prt_r298686688   | 0.11412275936990765888
+ 967487 | gpmetrics    | gpcc_queries_history_1_prt_r2063667896   | 0.06512605042016806723
+ 521328 | gpmetrics    | gpcc_plannode_history_1_prt_r2027291951  | 0.05608241226166227001
+ 741998 | gpmetrics    | gpcc_pg_log_history_1_prt_t1777675018    | 0.05263157894736842105
+  24754 | gpmetrics    | gpcc_plannode_history_1_prt_r1659906076  | 0.04293716086119376860
+ 912979 | gpmetrics    | gpcc_queries_history_1_prt_r2103869700   | 0.02576112412177985948
+  16992 | gpmetrics    | gpcc_table_info_history_1_prt_1          | 0.02224371373307543520
+ 967520 | gpmetrics    | gpcc_plannode_history_1_prt_r1227687911  | 0.02043414989085617269
+  70033 | gpmetrics    | gpcc_queries_history_1_prt_r223528022    | 0.01996672212978369384
+ 562127 | gpmetrics    | gpcc_plannode_history_1_prt_r1832251756  | 0.01653573683103037105
+  16967 | gpmetrics    | gpcc_table_info                          | 0.01551312649164677804
+ 930864 | gpmetrics    | gpcc_plannode_history_1_prt_r903766896   | 0.01376413966463321173
+ 521295 | gpmetrics    | gpcc_queries_history_1_prt_r1334202933   | 0.01282051282051282051
+ 201112 | gpmetrics    | gpcc_table_info_history_1_prt_r10755835  | 0.01124347476910721456
+ 458680 | gpmetrics    | gpcc_ps_history_1_prt_r1780324922        | 0.01098901098901098901
+  64171 | gpmetrics    | gpcc_table_info_history_1_prt_r805802478 | 0.01092097941012799110
+(20 rows)
 
 --- Tables with Missing Statistics (benchmark: 0 tables) ---
-ERROR:  relation "gp_toolkit.gp_stats_missing" does not exist
-LINE 1: SELECT * FROM gp_toolkit.gp_stats_missing LIMIT 20;
-                      ^
+ smischema |           smitable            | smisize | smicols | smirecs 
+-----------+-------------------------------+---------+---------+---------
+ gpmetrics | gpcc_alert_history            | f       |       5 |       0
+ gpmetrics | gpcc_alert_history_1_prt_1    | f       |       5 |       0
+ gpmetrics | gpcc_system_history           | f       |      31 |       0
+ gpmetrics | gpcc_alert_history_1_prt_2    | f       |       5 |       0
+ gpmetrics | gpcc_system_history_1_prt_1   | f       |      31 |       0
+ gpmetrics | gpcc_queries_history          | f       |      39 |       0
+ gpmetrics | gpcc_queries_history_1_prt_1  | f       |      39 |       0
+ gpmetrics | gpcc_queries_history_1_prt_2  | f       |      39 |       0
+ gpmetrics | gpcc_system_history_1_prt_2   | f       |      31 |       0
+ gpmetrics | gpcc_plannode_history         | f       |      28 |       0
+ gpmetrics | gpcc_plannode_history_1_prt_1 | f       |      28 |       0
+ gpmetrics | gpcc_plannode_history_1_prt_2 | f       |      28 |       0
+ gpmetrics | gpcc_ps_history               | f       |      13 |       0
+ gpmetrics | gpcc_ps_history_1_prt_1       | f       |      13 |       0
+ gpmetrics | gpcc_ps_history_1_prt_2       | f       |      13 |       0
+ gpmetrics | gpcc_database_history         | f       |       6 |       0
+ gpmetrics | gpcc_database_history_1_prt_1 | f       |       6 |       0
+ gpmetrics | gpcc_database_history_1_prt_2 | f       |       6 |       0
+ gpmetrics | gpcc_disk_history             | f       |       7 |       0
+ gpmetrics | gpcc_disk_history_1_prt_1     | f       |       7 |       0
+(20 rows)
 
 --- Top 20 Tables by Bloat (benchmark: ratio <= 30% on pages > 1600) ---
-ERROR:  relation "gp_toolkit.gp_bloat_diag" does not exist
-LINE 1: ...es)/nullif(bdiexppages,0))*100) AS bloat_pct FROM gp_toolkit...
-                                                             ^
+ schema_name | table_name | actual_pages | expected_pages | wasted_pages | wasted_mb | bloat_pct 
+-------------+------------+--------------+----------------+--------------+-----------+-----------
+(0 rows)
 
 --- Top 30 Tables by Size with Distribution Keys ---
 ERROR:  column dp.attrnums does not exist
-LINE 8: ...          WHERE a.attrelid=c.oid AND a.attnum=ANY(dp.attrnum...
-                                                             ^
+LINE 4:                WHEN dp.attrnums IS NULL THEN 'RANDOM (no key...
+                            ^
 
 --- Installed Extensions ---
       extname      | extversion | extrelocatable 
 -------------------+------------+----------------
- gp_exttable_fdw   | 1.0        | f
  metrics_collector | 1.0        | f
  plpgsql           | 1.0        | f
- plpython3u        | 1.0        | f
-(4 rows)
+ plpythonu         | 1.0        | f
+(3 rows)
 
 --- Database Size ---
  database_size 
 ---------------
- 4961 MB
-(1 row)
-
-</pre></div></details>
-<details class='det-skip'>
-<summary>&#128260; &nbsp;<b>Database: gp_wcc</b> &nbsp;
-  <span style='font-size:0.82em;font-weight:normal;color:#555;'>Click to expand all diagnostic queries</span>
-</summary>
-<div class='det-body'><pre>
---- Top 20 Tables by Skew Coefficient (benchmark: skccoeff <= 1.5) ---
-ERROR:  relation "gp_toolkit.gp_skew_coefficients" does not exist
-LINE 1: SELECT * FROM gp_toolkit.gp_skew_coefficients ORDER BY skcco...
-                      ^
-
---- Top 20 Tables by Idle Fraction ---
-ERROR:  relation "gp_toolkit.gp_skew_idle_fractions" does not exist
-LINE 1: SELECT * FROM gp_toolkit.gp_skew_idle_fractions ORDER BY sif...
-                      ^
-
---- Tables with Missing Statistics (benchmark: 0 tables) ---
-ERROR:  relation "gp_toolkit.gp_stats_missing" does not exist
-LINE 1: SELECT * FROM gp_toolkit.gp_stats_missing LIMIT 20;
-                      ^
-
---- Top 20 Tables by Bloat (benchmark: ratio <= 30% on pages > 1600) ---
-ERROR:  relation "gp_toolkit.gp_bloat_diag" does not exist
-LINE 1: ...es)/nullif(bdiexppages,0))*100) AS bloat_pct FROM gp_toolkit...
-                                                             ^
-
---- Top 30 Tables by Size with Distribution Keys ---
-ERROR:  column dp.attrnums does not exist
-LINE 8: ...          WHERE a.attrelid=c.oid AND a.attnum=ANY(dp.attrnum...
-                                                             ^
-
---- Installed Extensions ---
-     extname     | extversion | extrelocatable 
------------------+------------+----------------
- gp_exttable_fdw | 1.0        | f
- plpgsql         | 1.0        | f
-(2 rows)
-
---- Database Size ---
- database_size 
----------------
- 107 MB
+ 2460 MB
 (1 row)
 
 </pre></div></details>
 </div></div>
 <div class='section' style='background:#f8f9fa;'>
 <div class='section-body' style='padding:14px 20px;'>
-  <p><b>Report completed:</b> Mon Jun 15 06:35:49 PM EDT 2026</p>
+  <p><b>Report completed:</b> Tue Jun 23 08:48:33 AM EDT 2026</p>
   <p><b>Overall result:</b>
     <span class='pill pill-fail'>
       3 FAIL(S) &nbsp;|&nbsp; 19 PASS &nbsp;|&nbsp; 2 SKIPPED / SUGGESTION
